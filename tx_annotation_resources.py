@@ -7,7 +7,7 @@ ddid_asd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/data/al
 epilepsy_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/epilepsy/all_cohorts_DNVmislofsyn_add_chrposrefalt.fortxannotation.121018.vep.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
 swedish_schizop_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/exome_burden_schizophrenia/data/swedish-case-control-subset-for-analysis-hail2.vep.12118.mt"
-context_ht_path = 'gs://gnomad-resources/context/hail-0.2/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
+context_ht_path = "gs://gnomad-resources/context/hail-0.2/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
 # GTEx files
 gtex_v7_rsem_path = "gs://gnomad-berylc/tx-annotation/reheadered.031216.GTEx_Analysis_2016-09-07_RSEMv1.2.22_transcript_tpm.txt.bgz"
