@@ -1,12 +1,13 @@
 from gnomad_hail import *
 
-# MTs of interest
+# MTs/HTs of interest
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
 clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2let/clinvar_20181028.vep.ht" #available in gnomad_hail as well
 ddid_asd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/data/all.denovo.variants.loftee.beta.vepped.121018.mt"
 epilepsy_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/epilepsy/all_cohorts_DNVmislofsyn_add_chrposrefalt.fortxannotation.121018.vep.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
 swedish_schizop_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/exome_burden_schizophrenia/data/swedish-case-control-subset-for-analysis-hail2.vep.12118.mt"
+context_ht_path = 'gs://gnomad-resources/context/hail-0.2/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
 # GTEx files
 gtex_v7_rsem_path = "gs://gnomad-berylc/tx-annotation/reheadered.031216.GTEx_Analysis_2016-09-07_RSEMv1.2.22_transcript_tpm.txt.bgz"
@@ -41,20 +42,6 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
 #**hbdr_rsem_summary_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/RSEM_realignment/data/HBDR.RSEM.tx_medians.110718.mt"
 #**hbdr_rsem_maximums_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/RSEM_realignment/data/HBDR.RSEM.max_expression_per_base_per_tissue.110818.kt"
 
-''' to deprecate
-exac_pli_genes = "gs://gnomad-berylc/tx-annotation/pLI/pLI_data.tsv.gz"
-
-gtex_v6_rsem_path = "gs://gnomad-berylc/tx-annotation/reheadered.GTEx_Analysis_2016-09-07_RSEMv1.2.22_transcript_tpm.txt.bgz"
-gtex_v6_tx_summary_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/GTEx.V6.tx_medians.030818.mt"
-
-gtex_v7_rsem_path = "gs://gnomad-berylc/tx-annotation/reheadered.031216.GTEx_Analysis_2016-09-07_RSEMv1.2.22_transcript_tpm.txt.bgz"
-gtex_v7_tx_summary_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/GTEx.V7.tx_medians.030818.mt"
-gtex_v7_gene_maximums_kt_path = "gs://gnomad-berylc/tx-annotation/hail2/data/GTEx.v7.max_expression_per_gene_per_tissue.091218.kt"
-
-gnomad_vepped_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/gnomad.exomes.r2.0.2.sites.split.vep.030818.mt"
-gnomad_release_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/gnomad.exomes.r2.0.2.sites.split.vep.030818.mt"
-
-'''
 
 def make_clinvar_hail2(clinvar_vcf_path, clinvar_variants_table, clinvar_mt_out_path):
     """
@@ -204,39 +191,3 @@ def import_and_modify_gene_maximums(gtex_gene_maximums_table_tsv_path, gtex_gene
     gene_maximum_kt = gene_maximum_kt.key_by('ensg')
 
     gene_maximum_kt.write(gtex_gene_maximums_table_kt_out_path)
-
-#
-# def make_swedish_schz_hail2():
-#     import hail as hl
-#     import hail.expr.aggregators as agg
-#     from gnomad_hail import *
-#     hl.init(min_block_size=1)
-#
-#     vcf_path = "gs://gnomad-berylc/tx-annotation/hail0.2/exome_burden_schizophrenia/data/swedish-case-control-subset-for-analysis-021218.vcf.bgz"
-#
-#     samples_table = "gs://gnomad-berylc/tx-annotation/hail0.2/exome_burden_schizophrenia/data/" \
-#                     "swedish-case-control-subset-for-analysis.samples.table2.tsv"
-#
-#     variants_table = "gs://gnomad-berylc/tx-annotation/hail0.2/exome_burden_schizophrenia/data/" \
-#                      "swedish-case-control-subset-for-analysis.variants.table2.tsv"
-#
-#     mt_out = "gs://gnomad-berylc/tx-annotation/hail2/exome_burden_schizophrenia/data/" \
-#              "swedish-case-control-subset-for-analysis-hail2.121018.vep.mt"
-#
-#     samples_table = hl.import_table(samples_table, impute=True)
-#     variants_table = hl.import_table(variants_table, impute=True)
-#
-#     samples_table = samples_table.key_by('s')
-#
-#     variants_table = variants_table.annotate(**hl.parse_variant(variants_table.v))
-#     variants_table = variants_table.key_by('locus', 'alleles')
-#
-#     mt = hl.import_vcf(vcf_path, force_bgz=True, min_partitions=500)
-#
-#     annotated_mt = mt.annotate_rows(**variants_table[mt.locus, mt.alleles])
-#     annotated_mt = annotated_mt.annotate_cols(**samples_table[annotated_mt.s])
-#
-#     annotated_mt = hl.vep(annotated_mt, vep_config)
-#
-#     annotated_mt.write(mt_out, overwrite=True)
-#
