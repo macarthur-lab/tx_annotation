@@ -227,17 +227,17 @@ def get_expression_proportion(tx_table, tissues_to_filter, gene_maximum_kt):
         expression_proportion_dict=
         {tissue_id: tx_table.tx_expression[tissue_id] / tx_table.gene_maximum_dict[tissue_id] for tissue_id in remaining_tissue_columns})
 
-    columns_to_drop = list(set(expression_proportion_table.row) - {'locus', 'alleles','csq', 'ensg', 'symbol','lof', 'lof_flag'})
+    columns_to_drop = list(set(expression_proportion_table.row) - {'locus', 'alleles','csq', 'ensg',
+                                                                   'symbol','lof', 'lof_flag','expression_proportion_dict'})
 
     expression_proportion_table = expression_proportion_table.drop(*columns_to_drop)
-
-    expression_proportion_table = expression_proportion_table.annotate(
-        **{tissue_id: expression_proportion_table.expression_proportion_dict[tissue_id] for tissue_id in remaining_tissue_columns})
 
     expression_proportion_table = expression_proportion_table.annotate(
         mean_proportion=hl.mean( hl.filter(
             lambda e : ~hl.is_nan(e),  [x for x in expression_proportion_dict.values()]), filter_missing=True))
 
+    expression_proportion_table = expression_proportion_table.annotate(
+        **{tissue_id: expression_proportion_table.expression_proportion_dict[tissue_id] for tissue_id in remaining_tissue_columns})
 
     expression_proportion_table = expression_proportion_table.drop(
         expression_proportion_table.expression_proportion_dict).key_by(
