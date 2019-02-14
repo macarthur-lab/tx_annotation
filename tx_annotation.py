@@ -312,7 +312,7 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportion
     mt_kt = mt.rows()
 
     # Filter to positions in the CDS regions
-    cds_intervals = hl.import_bed(
+    cds_intervals = import_bed(
         "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/gencode.v19.CDS.forHail2.bed",
         skip_invalid_intervals=True)
     mt_kt = mt_kt.annotate(in_cds=hl.is_defined(cds_intervals[mt_kt.locus]))
