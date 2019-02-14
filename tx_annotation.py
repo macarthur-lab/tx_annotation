@@ -1,7 +1,7 @@
 import hail as hl
 from .tx_annotation_resources import *
 hl.init()
-
+from hail.methods.impex import *
 
 def locus_interval_expr(contig, start, end, includes_start, includes_end,
                         reference_genome, skip_invalid_intervals):
