@@ -276,16 +276,17 @@ def fix_loftee_beta_nonlofs(tc):
                        lof_flag=hl.cond(keep_same.contains(tc.csq), tc.lof_flag, hl.null('str')))
 
 
-def get_baselevel_expression_for_genes(mt, gtex, gene_list, get_proportions = None,
+def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportions = None,
                                        gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path):
-
     gtex_table = gtex.key_by("transcript_id")
-    genes = hl.literal(gene_list)
 
-    # Filter context_ht to genes of interest
-    mt = mt.annotate_rows(in_gene_of_interest=
-                                     genes.find(lambda x: mt.vep.transcript_consequences.any(lambda tc: tc.gene_symbol == x)))
-    mt = mt.filter_rows(mt.in_gene_of_interest != "NA")
+    if gene_list:
+        genes = hl.literal(gene_list)
+
+        # Filter context_ht to genes of interest
+        mt = mt.annotate_rows(in_gene_of_interest=
+                              genes.find(lambda x: mt.vep.transcript_consequences.any(lambda tc: tc.gene_symbol == x)))
+        mt = mt.filter_rows(mt.in_gene_of_interest != "NA")
 
     # Need to modify process consequences to ignore splice variants, because these can occur on intronic regions
 
@@ -301,8 +302,7 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list, get_proportions = No
 
         csqs = hl.literal(all_coding_minus_splice)
         return tc.annotate(
-            most_severe_consequence=csqs.find(lambda c: tc.consequence_terms.contains(c))
-)
+            most_severe_consequence=csqs.find(lambda c: tc.consequence_terms.contains(c)))
     # Add worst consequence within transcript consequences
     mt = (mt.annotate_rows(vep=mt.vep.annotate(
         transcript_consequences=mt.vep.transcript_consequences.map(add_most_severe_consequence_to_consequence_minus_splice))))
@@ -311,10 +311,10 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list, get_proportions = No
     mt = mt.explode_rows(mt.vep.transcript_consequences)
     mt_kt = mt.rows()
 
-
     # Filter to positions in the CDS regions
     cds_intervals = hl.import_bed(
-        "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/gencode.v19.CDS.forHail2.bed")
+        "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/gencode.v19.CDS.forHail2.bed",
+        skip_invalid_intervals=Tue)
     mt_kt = mt_kt.annotate(in_cds=hl.is_defined(cds_intervals[mt_kt.locus]))
     mt_kt = mt_kt.filter(mt_kt.in_cds)
 
@@ -347,7 +347,7 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list, get_proportions = No
     if get_proportions:
         gene_maximums_kt = hl.read_table(gene_maximums_kt_path)
         ht_sum_of_bases = ht_sum_of_bases.key_by(ht_sum_of_bases.locus)
-        ht_sum_of_bases = ht_sum_of_bases.annotate(alleles = "fillter")
+        ht_sum_of_bases = ht_sum_of_bases.annotate(alleles = "filler")
         ht_sum_of_bases = get_expression_proportion(tx_table = ht_sum_of_bases,
                                                     tissues_to_filter = ["sum_per_base"],
                                                     gene_maximum_kt  = gene_maximums_kt)
@@ -355,5 +355,3 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list, get_proportions = No
         ht_sum_of_bases = ht_sum_of_bases.drop(ht_sum_of_bases.alleles)
 
     return ht_sum_of_bases
-
-
