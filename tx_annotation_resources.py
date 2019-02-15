@@ -2,7 +2,7 @@ from gnomad_hail import *
 
 # MTs/HTs of interest
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
-clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2let/clinvar_20181028.vep.ht" #available in gnomad_hail as well
+clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0./clinvar_20181028.vep.ht" #available in gnomad_hail as well
 ddid_asd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/data/all.denovo.variants.loftee.beta.vepped.121018.mt"
 epilepsy_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/epilepsy/all_cohorts_DNVmislofsyn_add_chrposrefalt.fortxannotation.121018.vep.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
@@ -16,7 +16,7 @@ gtex_v7_gene_maximums_kt_path = "gs://gnomad-berylc/tx-annotation/hail2/data/GTE
 
 # Gene lists
 curated_haploinsufficient_genes = "gs://gnomad-berylc/tx-annotation/HI_genes_100417.tsv"
-clinvar_recessive_disease_genes = "gs://gnomad-berylc/tx-annotation/ClinVar/clinvar.recessive.disease.genes.tsv.gz"
+recessive_disease_genes = 'gs://gnomad-berylc/tx-annotation/hail2/data/all_ar.tsv'
 constraint = "gs://gnomad-resources/lof_paper/full_lof_metrics_by_transcript_an_adj_by_gene.txt.bgz"
 
 # CSQ terms
