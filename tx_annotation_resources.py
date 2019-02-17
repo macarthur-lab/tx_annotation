@@ -2,6 +2,7 @@ from gnomad_hail import *
 
 # MTs/HTs of interest
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
+gnomad_genomes_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/genomes/gnomad.genomes.r2.1.1.sites.ht"
 clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2/clinvar_20181028.vep.ht" #available in gnomad_hail as well
 ddid_asd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/data/all.denovo.variants.loftee.beta.vepped.121018.mt"
 epilepsy_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/epilepsy/all_cohorts_DNVmislofsyn_add_chrposrefalt.fortxannotation.121018.vep.mt"
