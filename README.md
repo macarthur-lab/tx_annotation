@@ -19,9 +19,20 @@ More information about this files format is below.
 
 Please be aware that while we don't expect any issues, the files may be iterated upon until publication of the manuscript! 
 
-We will walk through an example of annotating *de novo* variants in autism and developmental delay / intellectual disability with the GTEx v7 dataset 
+We will walk through an example of annotating *de novo* variants in autism and developmental delay / intellectual disability with the GTEx v7 dataset. 
 
-###### 1) Prepare the variant file 
+#### 0) Start a cluster and a Hail environment
+We recommend using [cloud tools from Neale lab] (https://github.com/Nealelab/cloudtools) for Google Cloud.
+
+You will need the gnomAD and tx-annotation init scripts, which are both publically available. Then you can start a cluster:
+
+```
+cluster start tutorial --worker-machine-type n1-highmem-8 --spark 2.2.0 --version 0.2 --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
+```
+
+At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
+
+#### 1) Prepare the variant file 
 The variant file is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
 
 This is what the first line of the file looks like : 
@@ -53,16 +64,30 @@ annotated_mt = hl.vep(mt, vep_config)
 annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt")
 ```
 
-###### 2) Prepare the isoform expression file 
+#### 2) Prepare the isoform expression file 
 
 We'll use the GTEx v7 isoform expression file. Here is what the header of the file looks like 
-
+> transcript_id   gene_id GTEX-1117F-0226-SM-5GZZ7        GTEX-1117F-0426-SM-5EGHI        GTEX-1117F-0526-SM-5EGHJ        
+> ENST00000373020.4       ENSG00000000003.10      26.84   4.13    13.54  
 
 We've replaced the sample names with unique tissue names, so that samples with the same tissue are labelled as WholeBlood.1, WholeBlood.2, WholeBlood.3 etc:
+> transcript_id   gene_id Adipose-Subcutaneous.1  Muscle-Skeletal.2       Artery-Tibial.3 
+> ENST00000373020.8       ENSG00000000003.14      26.32   3.95    13.23   
 
+We first to get the median expression of all transcripts per tissue. This can be carried out using the `get_gtex_summary()` function (the function name is a bit of a misnomer, as it can work on non-GTEx files).
 
+```
+gtex_isoform_expression_file = /path/to/text/file/with/isoform/quantifications
+gtex_median_isoform_expression_mt = /path/to/matrix_table/file/you/want/to/create
+get_gtex_summary(gtex_isoform_expression_file,gtex_median_isoform_expression_mt )
 
-###### 3) Add pext values
+```
+If you'd like to get mean isoform expression accross tissues and not mean, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
+
+Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript. 
+
+#### 3) Add pext values
+
 
 ## Analyses in manuscript 
 
