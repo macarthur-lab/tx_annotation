@@ -36,8 +36,8 @@ At the top of your script specify `from tx_annotation import *` which will start
 The variant file is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
 
 This is what the first line of the file looks like : 
-      DataSet CHROM POSITION REF ALT Child_ID Child_Sex GENE_NAME VEP_functional_class_canonical MPC loftee   group
-1 ASC_v15_VCF     1 94049574   C   A 13069.s1      Male     BCAR3           splice_donor_variant  NA     HC Control
+>      DataSet CHROM POSITION REF ALT Child_ID Child_Sex GENE_NAME VEP_functional_class_canonical MPC loftee   group
+> ASC_v15_VCF     1 94049574   C   A 13069.s1      Male     BCAR3           splice_donor_variant  NA     HC Control
 
 Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. 
 
