@@ -143,7 +143,7 @@ gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_d
 
 
 ## Analyses in manuscript 
-Here we'll go through the commands for obtaining pext values for analyses in manuscript. This will go over the analysis of
+Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
 - Getting baselevel expression values for a gene (Figure 2B) 
 - Comparison of highly conserved and unconserved regions (Figure 3A) 
 - Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes (Figure 4A)
@@ -220,4 +220,8 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
                                aggregate(mean_of_mean_pext =
                                         hl.agg.filter(~hl.is_nan(all_baselevel_ht.mean_prop_conservation),
                                                       hl.agg.mean(all_baselevel_ht.mean_prop_conservation))))
+```
+6 - Export the file for plotting
+```python
+mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
 ```
