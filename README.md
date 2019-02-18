@@ -131,7 +131,7 @@ ddid_asd = ddid_asd.filter_rows(~hl.is_missing(ddid_asd.tx_annotation))
 ```
 ddid_asd = ddid_asd.annotate_rows(tx_annotation=ddid_asd.tx_annotation.map(fix_loftee_beta_nonlofs))
 ```
-3 - Pull otu worst consequence
+3 - Pull out worst consequence
 ```
 ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 ```
@@ -139,12 +139,18 @@ ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 At this point you can write out the file with `ddid_asd.rows().export("out_file")`
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript, available here: 
-
-
-
+gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021819.tsv.bgz	
 
 
 ## Analyses in manuscript 
+Here we'll go through the commands for obtaining pext values for analyses in manuscript. This will go over the analysis of
+- Getting baselevel expression values for a gene (Figure 2B) 
+- Comparison of highly conserved and unconserved regions (Figure 3A) 
+- Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease gens 
+- Recreating analyses with salmon
 
-###### Conservation and pext
-d
+Note that scripts for these and other analyses are availabel in `/analyses/` folder in this repository. If you find something is missing, please e-mail me at berylc@broadinstitute.org
+
+
+#### Getting baselevel expression values 
+
