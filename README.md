@@ -86,7 +86,27 @@ If you'd like to get mean isoform expression accross tissues and not mean, add g
 
 Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript. 
 
+At this point, you'll also need a separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. For the manuscript, we directly imported gene expression values provided by GTEx, which were created using RNASeQC. They are available here: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt
+
 #### 3) Add pext values
+All you have to do at this point is import your VEP'd variant matrix table, and run the tx_annotate() function!
+
+1 - Import VEP'd variant MT, and median isoform expression MT: 
+```
+mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_mt_path, "mt")
+```
+2 - Run tx_annotation
+```
+ddid_asd_de_novos_with_pext = tx_annotate_mt(mt, gtex, 
+                                            tx_annotation_type = "proportion",
+                                            filter_to_csqs=all_coding_csqs)
+
+```
+
+This command by default will remove certain GTEx tissues (specified in `tx_annotation_resources`. If you don't want to remove these tissues (or if you are not working with GTEx) specifcy `tissues_to_filter = None`. If you'd like to get the non-normalized ext values instead of pext, specifcy `tx_annotation_type = "expression"`. Not specifying `filter_to_csqs=all_coding_csqs` will add pext values to  non-coding variants (which may be desired behavior based on your goals). If you're only interested in getting pext for a certain group of genes, you can specify that with `filter_to_genes`. This will return the same file, but will only add the pext values to the genes of interest. An example of adding pext while specifying genes is below. 
+
+`ddid_asd_de_novos` is your variant MT with a new column called `tx_annotation` which has the baselevel
+
 
 
 ## Analyses in manuscript 
