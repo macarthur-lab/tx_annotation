@@ -4,10 +4,8 @@ from gnomad_hail import *
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
 gnomad_genomes_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/genomes/gnomad.genomes.r2.1.1.sites.ht"
 clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2/clinvar_20181028.vep.ht" #available in gnomad_hail as well
-ddid_asd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/data/all.denovo.variants.loftee.beta.vepped.121018.mt"
-epilepsy_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/epilepsy/all_cohorts_DNVmislofsyn_add_chrposrefalt.fortxannotation.121018.vep.mt"
+ddid_asd_de_novos = "gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
-swedish_schizop_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/exome_burden_schizophrenia/data/swedish-case-control-subset-for-analysis-hail2.vep.12118.mt"
 context_ht_path = "gs://gnomad-resources/context/hail-0.2/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
 # GTEx files

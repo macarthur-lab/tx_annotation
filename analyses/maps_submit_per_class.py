@@ -62,13 +62,13 @@ ht = ht.annotate(keep = hl.case(missing_false=True)
 ht = ht.filter(ht.keep == "keep")
 
 # Group pLoFs, remember can't calculate MAPs on frameshifts (no mutational model)
-ht = ht.annotate(worst_csq = hl.case(missing_false=True)
-                 .when(ht.csq == "stop_gained", "stop_gained")
-                 .when(ht.csq == "splice_donor_variant", "splice_donor_variant")
-                 .when(ht.csq == "splice_acceptor_variant", "splice_acceptor_variant")
-                 .when(ht.csq == "missense_variant", "missense_variant")
-                 .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),
-                 lof = ht.lof)
+# ht = ht.annotate(worst_csq = hl.case(missing_false=True)
+#                  .when(ht.csq == "stop_gained", "pLoF")
+#                  .when(ht.csq == "splice_donor_variant", "pLoF")
+#                  .when(ht.csq == "splice_acceptor_variant", "pLoF")
+#                  .when(ht.csq == "missense_variant", "missense_variant")
+#                  .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),
+#                  lof = ht.lof)
 
 print("finished processing")
 
@@ -101,9 +101,9 @@ def run_maps_constraint_binexport(f, write, mut_ht = mutation_ht):
     m = maps(f, mut_ht, ['constraint_bin'])
     m.export(write)
 
-oe_constraint_bin_below_01 = ht_constraint.filter(ht_constraint.mean_expression < 0.1)
-run_maps_constraint_binexport(oe_constraint_bin_below_01,
-                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.low.expression.021319.tsv.bgz")
+#oe_constraint_bin_below_01 = ht_constraint.filter(ht_constraint.mean_expression < 0.1)
+#run_maps_constraint_binexport(oe_constraint_bin_below_01,
+#                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.low.expression.021319.tsv.bgz")
 
 
 print('wrote low')

@@ -21,7 +21,6 @@ mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
 mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
 
 # AR genes
-recessive_genes = import_gene_list(blekhman_berg, gene_column="gene")
 
 mt_gnomad_recessive = tx_annotate_mt(mt, gtex, "proportion", filter_to_genes=recessive_genes,
                                      gene_column_in_mt="gene_symbol",
