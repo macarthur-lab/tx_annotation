@@ -177,7 +177,7 @@ gene_baselevel= get_baselevel_expression_for_genes(mt, hbdr_fetal, gene_list = {
 ```
 This file was used in Supp Fig 6D.
 
-#### Comparison of highly conserved and unconserved regions
+#### Comparison of pext in highly conserved and unconserved regions
 
 
 1 - Read in baselevel expresison and phyloCSF files
@@ -225,3 +225,6 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
 ```python
 mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
 ```
+
+#### Comparison of pext in highly conserved and unconserved regions
+
