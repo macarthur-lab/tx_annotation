@@ -103,7 +103,12 @@ ddid_asd_de_novos_with_pext = tx_annotate_mt(mt, gtex,
 
 ```
 
-This command by default will remove certain GTEx tissues (specified in `tx_annotation_resources`. If you don't want to remove these tissues (or if you are not working with GTEx) specifcy `tissues_to_filter = None`. If you'd like to get the non-normalized ext values instead of pext, specifcy `tx_annotation_type = "expression"`. Not specifying `filter_to_csqs=all_coding_csqs` will add pext values to  non-coding variants (which may be desired behavior based on your goals). If you're only interested in getting pext for a certain group of genes, you can specify that with `filter_to_genes`. This will return the same file, but will only add the pext values to the genes of interest. An example of adding pext while specifying genes is below. 
+This command by default will remove certain GTEx tissues (specified in `tx_annotation_resources`. 
+
+- If you don't want to remove these tissues (or if you are not working with GTEx) specifcy `tissues_to_filter = None`.
+- If you'd like to get the non-normalized ext values instead of pext, specifcy `tx_annotation_type = "expression"`.
+- Not specifying `filter_to_csqs=all_coding_csqs` will add pext values to  non-coding variants (which may be desired behavior based on your goals). Note that splice variants are considered coding variants. The description of coding csqs is available in `tx_annotation_resources`.
+- If you're only interested in getting pext for a certain group of genes, you can specify that with `filter_to_genes`. This will return the same file, but will only add the pext values to the genes of interest. An example of adding pext while specifying genes is below. 
 
 The function returns your variant MT with a new field called `tx_annotation` (ddid_asd_de_novos_with_pext above). 
 
@@ -111,7 +116,11 @@ In this field you
 
 Here's an example line:
 
-At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just the canonical variant - which sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the specification we see this method being most useful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
+At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just variants found on the canonical transcript - the last of which  sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the context for which we see this method being most powerful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
+
+#### 4) Optional post-processing to pull out pext values for the worst consequence annotation
+
+At this point you will remove all variants that did not receive a pext value (if you specific `filter_to_csqs = all_coding_csqs this will remove noncoding variants`)
 
 
 
