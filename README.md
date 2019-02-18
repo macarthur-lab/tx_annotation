@@ -146,8 +146,7 @@ gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_d
 Here we'll go through the commands for obtaining pext values for analyses in manuscript. This will go over the analysis of
 - Getting baselevel expression values for a gene (Figure 2B) 
 - Comparison of highly conserved and unconserved regions (Figure 3A) 
-- Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes 
-- Recreating analyses with salmon
+- Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes (Figure 4A)
 
 Note that scripts for these and other analyses are availabel in `/analyses/` folder in this repository. The paths to the files are available in `tx_annotation_resources.py` If you find something is missing, please e-mail me at berylc@broadinstitute.org
 
@@ -198,5 +197,27 @@ phylocsf = phylocsf.annotate(conservation_type = hl.case(missing_false=True)
 phylocsf = phylocsf.filter(phylocsf.conservation_type != "filter")
 ```
 
-3 -  Make intervals to filter baselevel file
-
+3 -  Make intervals in the phyloCSF file
+phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
+```python
+phylocsf = phylocsf.annotate(
+    interval = hl.interval(hl.locus(phylocsf.chrom, phylocsf.start_coordinate), hl.locus(phylocsf.chrom, phylocsf.end_coordinate)),
+    interval_name = phylocsf.chrom + ":" + hl.str(phylocsf.start_coordinate) + "-" + hl.str(phylocsf.end_coordinate) )
+phylocsf = phylocsf.key_by(phylocsf.interval)
+```
+4 - Filter the baselevel expression file to the intervals of high or low conservation in the phyloCSF file
+```python
+all_baselevel_ht = all_baselevel_ht.annotate(**phylocsf[all_baselevel_ht.locus])
+all_baselevel_ht= all_baselevel_ht.filter(hl.is_defined(all_baselevel_ht.conservation_type), keep=True)
+```
+ 5- Get mean pext in these intervals
+``` python
+mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_ht.symbol,
+                                                         ensg = all_baselevel_ht.ensg,
+                                                         enst = all_baselevel_ht.transcript_id,
+                                                         interval = all_baselevel_ht.interval_name,
+                                                         conservation_type = all_baselevel_ht.conservation_type).
+                               aggregate(mean_of_mean_pext =
+                                        hl.agg.filter(~hl.is_nan(all_baselevel_ht.mean_prop_conservation),
+                                                      hl.agg.mean(all_baselevel_ht.mean_prop_conservation))))
+```
