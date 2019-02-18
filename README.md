@@ -41,7 +41,7 @@ This is what the first line of the file looks like :
 
 Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. 
 
-In order to add pext values, you must annotate with VEP. This is how to import the file into Hail, define the variant field, vep, and write the MT. 
+In order to add pext values, you must annotate with VEP. This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
 
 1 - Import file as a table 
 ```
@@ -97,9 +97,9 @@ mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_mt_pa
 ```
 2 - Run tx_annotation
 ```
-ddid_asd_de_novos_with_pext = tx_annotate_mt(mt, gtex, 
-                                            tx_annotation_type = "proportion",
-                                            filter_to_csqs=all_coding_csqs)
+ddid_asd = tx_annotate_mt(mt, gtex,
+                          tx_annotation_type = "proportion",
+                          filter_to_csqs=all_coding_csqs)
 
 ```
 
@@ -120,8 +120,25 @@ At this point, you can choose what annotation you want to use for a given varian
 
 #### 4) Optional post-processing to pull out pext values for the worst consequence annotation
 
-At this point you will remove all variants that did not receive a pext value (if you specific `filter_to_csqs = all_coding_csqs this will remove noncoding variants`)
+At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS (splice) annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release). We therefore remove OS annotations. Finally, we extract the worst consequence, and create one column per tissue. 
 
+1 - Remove variants that did not receive a pext annotation (ie. noncoding variants)
+```
+ddid_asd = ddid_asd.filter_rows(~hl.is_missing(ddid_asd.tx_annotation))
+
+```
+2 - Overwrite LOFTEE OS variants with original variant annotation 
+```
+ddid_asd = ddid_asd.annotate_rows(tx_annotation=ddid_asd.tx_annotation.map(fix_loftee_beta_nonlofs))
+```
+3 - Pull otu worst consequence
+```
+ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
+```
+
+At this point you can write out the file with `ddid_asd.rows().export("out_file")`
+
+This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript, available here: 
 
 
 
