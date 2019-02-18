@@ -22,7 +22,7 @@ Please be aware that while we don't expect any issues, the files may be iterated
 We will walk through an example of annotating *de novo* variants in autism and developmental delay / intellectual disability with the GTEx v7 dataset. 
 
 #### 0) Start a cluster and a Hail environment
-We recommend using [cloud tools from Neale lab] (https://github.com/Nealelab/cloudtools) for Google Cloud.
+We recommend using [cloud tools from Neale lab](https://github.com/Nealelab/cloudtools) for Google Cloud.
 
 You will need the gnomAD and tx-annotation init scripts, which are both publically available. Then you can start a cluster:
 
