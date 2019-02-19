@@ -226,5 +226,47 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
 mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
 ```
 
-#### Comparison of pext in highly conserved and unconserved regions
+#### Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes (Figure 4A)
 
+This also serves as an example of annotating only a subset of genes in a variant table. 
+
+Here we will annotate variants in HI genes in the gnomAD exomes sites HT, the gnomAD genomes sites HT, and the ClinVar HT with pext values. 
+
+```
+out_dir = "gs://gnomad-public/papers/2019-tx-annotation/results/gene_list_comparisons/"
+```
+
+1 - Import HI genes 
+```python
+hi_genes = import_gene_list(curated_haploinsufficient_genes, gene_column="ENSGID", ensg=True)
+```
+There are two options for importing gene lists, either importing ENSG IDs, or importing gene symbols. `gene_column` refers to the column in the file that contains your gene names, if the values are ENSGs, specify `ensg = True`. You can specify `peek = True` if you'd like to just like to import the gene list file and take a peek without doing anything.
+
+2 - Annotate gnomAD exomes
+```python
+mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
+                              filter_to_csqs=lof_csqs,
+                              filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
+mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotation))
+mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
+mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+
+```
+3 - Annotate gnomAD genomes 
+```python
+ddid_asd = pull_out_worst_from_tx
+```
+4 - Annotate ClinVar 
+```python
+clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_mt_path, "ht")
+mt_clinvar_hi = tx_annotate_mt(clinvar_mt, gtex,"proportion",
+                               filter_to_csqs=lof_csqs, filter_to_genes=hi_genes,
+                               gene_column_in_mt="gene_id")
+mt_clinvar_hi = mt_clinvar_hi.filter_rows(~hl.is_missing(mt_clinvar_hi.tx_annotation))
+mt_clinvar_hi = pull_out_worst_from_tx_annotate(mt_clinvar_hi)
+mt_clinvar_hi = mt_clinvar_hi.annotate_rows(**mt_clinvar_hi.info)
+mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info") \# The fields are dropped to save space
+mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021519.tsv.bgz" %out_dir)
+
+```
