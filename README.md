@@ -11,7 +11,7 @@ You will need
   
 You can have additional columns in your variant file, which will be maintained, and only new columns of transcript-expression annotation will be added. Your isoform expression matrix must start with two columns : 1. transcript id and 2. gene_id. The remaining columns can be any samples or tissues. If you have biological replicates, they should be numbered with a '.' delimiter (e.g. MuscleSkeletal.1, MuscleSkeletal.2, MuscleSkeletal.3). 
  
-Instructions to set up Hail are laid out in the [Hail docs](https://hail.is/docs/0.2/)
+Instructions to set up Hail [can be found in the Hail docs](https://hail.is/docs/0.2/)
 
 If you're unable to set up Hail in your local environment, we have also release the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.tsv.bgz
 
@@ -24,7 +24,7 @@ We will walk through an example of annotating *de novo* variants in autism and d
 #### 0) Start a cluster and a Hail environment
 We recommend using [cloud tools from Neale lab](https://github.com/Nealelab/cloudtools) for Google Cloud.
 
-You will need the gnomAD and tx-annotation init scripts, which are both publically available. Then you can start a cluster:
+You will need the gnomAD and tx-annotation init scripts, which are both publically available. To start a cluster:
 
 ```
 cluster start tutorial --worker-machine-type n1-highmem-8 --spark 2.2.0 --version 0.2 --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
@@ -33,7 +33,7 @@ cluster start tutorial --worker-machine-type n1-highmem-8 --spark 2.2.0 --versio
 At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
 
 #### 1) Prepare the variant file 
-The variant file is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
+The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
 
 This is what the first line of the file looks like : 
 >      DataSet CHROM POSITION REF ALT Child_ID Child_Sex GENE_NAME VEP_functional_class_canonical MPC loftee   group
