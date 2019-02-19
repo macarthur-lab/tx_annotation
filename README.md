@@ -47,13 +47,13 @@ In order to add pext values, you must annotate with VEP. This is how to import t
 ```python
 rt = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt")
 ```
-2 - Define the variant in terms of chrom:pos:ref:alt and have Hail parse it, which will create a locus and alleles column
+2 - Define the variant in terms of chrom:pos:ref:alt and have Hail parse it, which will create locus and alleles fields
 ```python
 rt = rt.annotate(variant=rt.CHROM + ':' + rt.POSITION + ":" + rt.REF + ":" + rt.ALT)
 rt = rt.annotate(** hl.parse_variant(rt.variant))
 rt = rt.key_by(rt.locus, rt.alleles)
 ```
-3 - Make a MT from table, and repartition for speed (rule of thumb is ~2k variants per partition)
+3 - Make a MT from the Table, and repartition for speed (rule of thumb is ~2k variants per partition)
 ```python
 mt = hl.MatrixTable.from_rows_table(rt)
 mt = mt.repartition(10)
@@ -74,7 +74,7 @@ We've replaced the sample names with unique tissue names, so that samples with t
 > transcript_id   gene_id Adipose-Subcutaneous.1  Muscle-Skeletal.2       Artery-Tibial.3 
 > ENST00000373020.8       ENSG00000000003.14      26.32   3.95    13.23   
 
-We first to get the median expression of all transcripts per tissue. This can be carried out using the `get_gtex_summary()` function (the function name is a bit of a misnomer, as it can work on non-GTEx files).
+We first need to get the median expression of all transcripts per tissue. This can be carried out using the `get_gtex_summary()` function (the function name is a misnomer, as it can work on non-GTEx files).
 
 ```python
 gtex_isoform_expression_file = /path/to/text/file/with/isoform/quantifications
