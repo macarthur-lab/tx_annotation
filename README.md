@@ -245,6 +245,7 @@ There are two options for importing gene lists, either importing ENSG IDs, or im
 2 - Annotate gnomAD exomes
 ```python
 mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt = mt.filter_rows(hl.len(mt.filters) == 0)
 mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
                               filter_to_csqs=lof_csqs,
                               filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
@@ -252,11 +253,23 @@ mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotatio
 mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
 mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
 
+- `gene_column_in_mt` is one of either `gene_id` (ENSG) or `gene_symbol` and tells the function which VEP field to look to filter to genes.
+
+- `mt = mt.filter_rows(hl.len(mt.filters) == 0)` filters variants to only those that are RF PASS.
+
 ```
 3 - Annotate gnomAD genomes 
 ```python
-ddid_asd = pull_out_worst_from_tx
+mt_genomes, gtex = read_tx_annotation_tables(gnomad_genomes_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt_genomes = mt_genomes.filter_rows(hl.len(mt_genomes.filters) == 0)
+mt_gnomad_genomes_hi = tx_annotate_mt(mt_genomes, gtex,"proportion",
+                              filter_to_csqs=lof_csqs,
+                              filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
+mt_gnomad_genomes_hi = mt_gnomad_genomes_hi.filter_rows(~hl.is_missing(mt_gnomad_genomes_hi.tx_annotation))
+mt_gnomad_genomes_hi = pull_out_worst_from_tx_annotate(mt_gnomad_genomes_hi)
+mt_gnomad_genomes_hi.rows().export("%sHI_genes.gnomad.genomes.r2.1.tx_annotated.021619.tsv.bgz" %out_dir)
 ```
+
 4 - Annotate ClinVar 
 ```python
 clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_mt_path, "ht")
@@ -266,7 +279,7 @@ mt_clinvar_hi = tx_annotate_mt(clinvar_mt, gtex,"proportion",
 mt_clinvar_hi = mt_clinvar_hi.filter_rows(~hl.is_missing(mt_clinvar_hi.tx_annotation))
 mt_clinvar_hi = pull_out_worst_from_tx_annotate(mt_clinvar_hi)
 mt_clinvar_hi = mt_clinvar_hi.annotate_rows(**mt_clinvar_hi.info)
-mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info") \# The fields are dropped to save space
+mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info") 
 mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021519.tsv.bgz" %out_dir)
-
 ```
+The fields are dropped to save space. 
