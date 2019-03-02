@@ -6,12 +6,14 @@ gnomad_genomes_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/genomes/gn
 clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2/clinvar_20181028.vep.ht" #available in gnomad_hail as well
 ddid_asd_de_novos = "gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
-context_ht_path = "gs://gnomad-resources/context/hail-0.2/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
+context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
 # GTEx files
-gtex_v7_rsem_path = "gs://gnomad-berylc/tx-annotation/reheadered.031216.GTEx_Analysis_2016-09-07_RSEMv1.2.22_transcript_tpm.txt.bgz"
+gtex_v7_rsem_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
 gtex_v7_tx_summary_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/data/GTEx.V7.tx_medians.110818.mt"
-gtex_v7_gene_maximums_kt_path = "gs://gnomad-berylc/tx-annotation/hail2/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
+gtex_v7_gene_maximums_kt_path = "gsu"
+
+# HBDR fetal file
 
 # Gene lists
 curated_haploinsufficient_genes = "gs://gnomad-berylc/tx-annotation/HI_genes_100417.tsv"
@@ -29,18 +31,12 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
                       "Cervix_Ectocervix","Cervix_Endocervix", "FallopianTube", "Kidney_Cortex",
                       "MinorSalivaryGland", "Uterus", "Ovary","Testis", "Vagina",
                       "Cells_EBV_transformedlymphocytes", "Cells_Transformedfibroblasts", "Prostate"]
+phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/phylocsf_data.tsv.gz"
+
+
 
 # Fetal RNA-seq
-#**hbdr_salmon_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/data/results-PRJEB14594-gencode19-for-hail-062918.tsv.bgz"
-#**hbdr_salmon_summary_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/data/HBDR.tx_medians.062918.mt"
-
-#**hbdr_salmon_timepoint_rsem_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/data/timepoint-results-PRJEB14594-gencode19-for-hail-071418.tsv"
-#**hbdr_salmon_timepoint_summary_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/data/HBDR.timepoints.tx_medians.071618.mt"
-
-#**hbdr_rsem_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/RSEM_realignment/data/HBDR.RSEM.tissue_names.tpm.tsv.gz"
-#**hbdr_rsem_summary_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/RSEM_realignment/data/HBDR.RSEM.tx_medians.110718.mt"
-#**hbdr_rsem_maximums_path = "gs://gnomad-berylc/tx-annotation/hail2/fetal_rnaseq/RSEM_realignment/data/HBDR.RSEM.max_expression_per_base_per_tissue.110818.kt"
-
+hbdr_fetal_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.RSEM.sample_specific.tx_medians.021719.mt"
 
 def make_clinvar_hail2(clinvar_vcf_path, clinvar_variants_table, clinvar_mt_out_path):
     """
