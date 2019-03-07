@@ -12,9 +12,9 @@ def import_gene_list(gene_list_path, gene_column, ensg=False, oe_threshold=False
     This column will be turned into a set.
     :param str or bool ensg: If there are no ENSGs with version numbers in the file, specify False (Default)
     If there are ENSGs with version numbers in the file, specify column containing the ENSGs.
-    :param float or bool pLI_threshold: If the file does not contain pLI scores to filter, specify False (Default)
-    If the file contains pLI scores, specify threshold to filter files.
-    e.g. pLI threshold = 0.95
+    :param float or bool oe_threshold: If the file does not contain pLI scores to filter, specify False (Default)
+    If the file contains LOEUF scores, specify threshold to filter files.
+    e.g. pLI threshold = 0.35
     :param bool peek: Default False.
     If you want to peek at the gene list to get the parameters
     Print out the first few lines of the gene list tsv, returns None

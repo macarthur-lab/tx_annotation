@@ -9,15 +9,14 @@ chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenit
 context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
 # GTEx files
-gtex_v7_rsem_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
-gtex_v7_tx_summary_mt_path = "gs://gnomad-berylc/tx-annotation/hail2/data/GTEx.V7.tx_medians.110818.mt"
-gtex_v7_gene_maximums_kt_path = "gsu"
+gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
+gtex_v7_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
 
 # HBDR fetal file
 
 # Gene lists
-curated_haploinsufficient_genes = "gs://gnomad-berylc/tx-annotation/HI_genes_100417.tsv"
-recessive_disease_genes = 'gs://gnomad-berylc/tx-annotation/hail2/data/all_ar.tsv'
+curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/HI_genes_100417.tsv"
+recessive_disease_genes = 'gs://gnomad-public/papers/2019-tx-annotation/data/all_ar.tsv'
 constraint = "gs://gnomad-resources/lof_paper/full_lof_metrics_by_transcript_an_adj_by_gene.txt.bgz"
 
 # CSQ terms
@@ -37,6 +36,9 @@ phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/phylocsf
 
 # Fetal RNA-seq
 hbdr_fetal_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.RSEM.sample_specific.tx_medians.021719.mt"
+
+# Unsure if can share as behind GTEx dbGAP
+#gtex_v7_rsem_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
 
 def make_clinvar_hail2(clinvar_vcf_path, clinvar_variants_table, clinvar_mt_out_path):
     """
