@@ -61,7 +61,7 @@ mt = mt.repartition(10)
 4 - VEP and write out the MT
 ```python
 annotated_mt = hl.vep(mt, vep_config)
-annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt")
+annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.vepped.021819.mt")
 ```
 
 #### 2) Prepare the isoform expression file 
@@ -139,7 +139,7 @@ ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 At this point you can write out the file with `ddid_asd.rows().export("out_file")`
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript, available here: 
-gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021819.tsv.bgz	
+gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.tx_annotated.021819.tsv.bgz	
 
 
 ## Analyses in manuscript 
