@@ -4,7 +4,7 @@ from gnomad_hail import *
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
 gnomad_genomes_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/genomes/gnomad.genomes.r2.1.1.sites.ht"
 clinvar_ht_path = "gs://gnomad-resources/clinvar/hail-0.2/clinvar_20181028.vep.ht" #available in gnomad_hail as well
-ddid_asd_de_novos = "gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt"
+ddid_asd_de_novos = "gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.vepped.021819.mt"
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
 context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
@@ -91,6 +91,18 @@ def vcf_to_hail2(vcf_path, mt_out):
     mt = split_multi_dynamic(mt)
     mt = hl.vep(mt, vep_config)
     mt.write(mt_out)
+
+
+def show_steve(ab, cd,ef):
+    '''
+
+    :param ef:
+    :param ab:
+    :param cd:
+    :return:
+    '''
+
+
 
 
 def make_gnomad_release_hail2(vcf_path, mt_out):
