@@ -92,19 +92,6 @@ def vcf_to_hail2(vcf_path, mt_out):
     mt = hl.vep(mt, vep_config)
     mt.write(mt_out)
 
-
-def show_steve(ab, cd,ef):
-    '''
-
-    :param ef:
-    :param ab:
-    :param cd:
-    :return:
-    '''
-
-
-
-
 def make_gnomad_release_hail2(vcf_path, mt_out):
     """
     Used to import, filter and VEP existing "bootleg" gnomAD VCF (01.26.2018) and write out as a Hail 0.2 MatrixTable
