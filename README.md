@@ -9,11 +9,11 @@ You will need
   2) An isoform expression matrix 
   3) The ability to use Hail locally or on a cloud platform 
   
-You can have additional columns in your variant file, which will be maintained, and only new columns of transcript-expression annotation will be added. Your isoform expression matrix must start with two columns : 1. transcript id and 2. gene_id. The remaining columns can be any samples or tissues. If you have biological replicates, they should be numbered with a '.' delimiter (e.g. MuscleSkeletal.1, MuscleSkeletal.2, MuscleSkeletal.3). 
+You can have additional columns in your variant file, which will be maintained, and only new columns of transcript-expression annotation will be added. Your isoform expression matrix must start with two columns : 1. transcript_id and 2. gene_id. The remaining columns can be any samples or tissues. If you have biological replicates, they should be numbered with a '.' delimiter (e.g. MuscleSkeletal.1, MuscleSkeletal.2, MuscleSkeletal.3). 
  
 Instructions to set up Hail [can be found in the Hail docs](https://hail.is/docs/0.2/)
 
-If you're unable to set up Hail in your local environment, we have also release the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.tsv.bgz
+If you're unable to set up Hail in your local environment, we have released the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.tsv.bgz
 
 More information about this files format is below.
 
@@ -39,7 +39,7 @@ This is what the first line of the file looks like :
 > DataSet CHROM POSITION  REF ALT	GENE_NAME	VEP_functional_class_canonical	MPC	loftee	group
 > ASC_v15_VCF 1 94049574  C A BCAR3 splice_donor_variant  NA	HC	Control
 
-Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. 
+Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. The VEP columns in the file are based on the canonical trasncript, so we will re-VEP. 
 
 In order to add pext values, you must annotate with VEP. This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
 
@@ -82,11 +82,11 @@ gtex_median_isoform_expression_mt = /path/to/matrix_table/file/you/want/to/creat
 get_gtex_summary(gtex_isoform_expression_file,gtex_median_isoform_expression_mt )
 
 ```
-If you'd like to get mean isoform expression accross tissues and not mean, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
+If you'd like to get mean isoform expression accross tissues and not median, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
 
-Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript. 
+Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
 
-At this point, you'll also need a separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. For the manuscript, we directly imported gene expression values provided by GTEx, which were created using RNASeQC. They are available here: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt
+At this point, you'll also need a separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. For the manuscript, we directly imported gene expression values provided by GTEx, which were created using RNASeQC, from the GTEx portal website. They are available here: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt
 
 #### 3) Add pext values
 All you have to do at this point is import your VEP'd variant matrix table, and run the tx_annotate() function!
@@ -103,24 +103,20 @@ ddid_asd = tx_annotate_mt(mt, gtex,
 
 ```
 
-This command by default will remove certain GTEx tissues (specified in `tx_annotation_resources`. 
+This command by default will remove certain GTEx tissues with <100 samples, reproductive tissues, or cell lines (specified in `tx_annotation_resources` and in the manuscript). 
 
-- If you don't want to remove these tissues (or if you are not working with GTEx) specifcy `tissues_to_filter = None`.
-- If you'd like to get the non-normalized ext values instead of pext, specifcy `tx_annotation_type = "expression"`.
-- Not specifying `filter_to_csqs=all_coding_csqs` will add pext values to  non-coding variants (which may be desired behavior based on your goals). Note that splice variants are considered coding variants. The description of coding csqs is available in `tx_annotation_resources`.
-- If you're only interested in getting pext for a certain group of genes, you can specify that with `filter_to_genes`. This will return the same file, but will only add the pext values to the genes of interest. An example of adding pext while specifying genes is below. 
+- If you don't want to remove these tissues (or if you are not working with GTEx) specify `tissues_to_filter = None`.
+- If you'd like to get the non-normalized ext values instead of pext, specify `tx_annotation_type = "expression"`.
+- Not specifying `filter_to_csqs=all_coding_csqs` will add pext values to  non-coding variants (which may be desired behavior based on your goals). Note that splice variants are considered coding variants here. The description of coding csqs is available in `tx_annotation_resources` as `all_coding_csqs`.
+- If you're only interested in getting pext for a certain group of genes, you can specify that with `filter_to_genes`. This will return the same file, but will only add the pext values to the genes of interest. An example of adding pext while specifying genes is below (under the ClinVar - gnomAD comparison section) 
 
 The function returns your variant MT with a new field called `tx_annotation` (ddid_asd_de_novos_with_pext above). 
-
-In this field you
-
-Here's an example line:
 
 At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just variants found on the canonical transcript - the last of which  sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the context for which we see this method being most powerful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
 
 #### 4) Optional post-processing to pull out pext values for the worst consequence annotation
 
-At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS (splice) annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release). We therefore remove OS annotations. Finally, we extract the worst consequence, and create one column per tissue. 
+At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release if it's predicted to affect splicing). We therefore replace OS annotations with the original annotation (ie. we replace the HC for a synonymous variant with ""). Finally, we extract the worst consequence, and create one column per tissue. 
 
 1 - Remove variants that did not receive a pext annotation (ie. noncoding variants)
 ```python
@@ -138,8 +134,8 @@ ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 
 At this point you can write out the file with `ddid_asd.rows().export("out_file")`
 
-This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript, available here: 
-gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.tx_annotated.021819.tsv.bgz	
+This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript. We've exported the result of this code snippet here: 
+gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.tx_annotated.proprotion.021819.tsv.bgz
 
 
 ## Analyses in manuscript 
