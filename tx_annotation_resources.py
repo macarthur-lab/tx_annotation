@@ -12,6 +12,10 @@ context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo
 gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
 gtex_v7_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
 
+gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V8.tx_medians.042319.ht"
+gtex_v8_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v8.gene_expression_per_gene_per_tissue.042319.kt"
+
+
 # HBDR fetal file
 
 # Gene lists
@@ -167,6 +171,21 @@ def get_gtex_summary(gtex_rsem_path, gtex_tx_summary_out_path, get_medians=True,
         gtex_table_modified = gtex_table_modified.drop(gtex_table_modified.values)
 
         gtex_table_modified.export(make_per_tissue_file)
+
+
+
+def get_gene_expression(gtex_tx_summary_path, gene_expression_out):
+    gtex = hl.read_table(gtex_tx_summary_path)
+    gene_expression = gtex.group_by(ensg=gtex.gene_id).aggregate(gene_expression=hl.agg.array_sum(gtex.agg_expression))
+    tissue_ids = sorted([y.tissue for y in gtex.values.take(1)[0]])
+    d = {tiss: i for i, tiss in enumerate(tissue_ids)}
+    gene_expression = (gene_expression.annotate(
+        gene_maximum_dict={tissue_id.replace("-", "_").replace(" ", "_").replace("(", "_").replace(")", "_"):
+                               gene_expression.gene_expression[d[tissue_id]] for tissue_id in tissue_ids}))
+
+    gene_expression.show(10)
+    gene_expression.write(gene_expression_out)
+
 
 # might need to deprecate if I can get maximums working in Hail
 
