@@ -25,6 +25,7 @@ def load_tx_expression_data(tx_ht):
 
     return tx_ht.annotate(tx_annotation=tx_ht.tx_annotation.map(process_expression_data))
 
+context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 context_ht = hl.read_table(context_ht_path)
 
 # Import and process gnomad 2.1.1 transcript annotation
