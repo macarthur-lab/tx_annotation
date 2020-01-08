@@ -8,6 +8,11 @@ ddid_asd_de_novos = "gs://gnomad-public/papers/2019-tx-annotation/results/de_nov
 chd_de_novos = "gs://gnomad-berylc/tx-annotation/hail2/DeNovoSignal/chd/congenital_heart_disease_meta.minrep.dedup.both.loftee.beta.vep.121018.mt"
 context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo_sapiens_assembly19.fasta.snps_only.vep_20181129.ht"
 
+# Precomputed HTs with pext for all possible bases (calculated from context_ht_path, script for generating : get_all_possible_snvs.py
+# The first version includes all of GTEx tissues, the second is the version used in the manuscript, that has certain tissues filtered (see manuscript)
+all_bases_gtex_pext = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.022719.ht"
+all_bases_gtex_pext_filtered_tissues = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.0218219.ht"
+
 # GTEx files
 gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
 gtex_v7_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
@@ -206,3 +211,32 @@ def import_and_modify_gene_maximums(gtex_gene_maximums_table_tsv_path, gtex_gene
     gene_maximum_kt = gene_maximum_kt.key_by('ensg')
 
     gene_maximum_kt.write(gtex_gene_maximums_table_kt_out_path)
+
+def identify_maximum_pext_per_gene(all_possible_snv_pext_path, gene_maximums_out):
+    """
+    :param all_possible_snv_pext_path: Path to HT with pext annotations for all possible bases
+    For manuscript, used "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.ht"
+    :param gene_maximums_out: Path to file that will have have the maximum pext per gene, which is used to filter genes with low maximum pexts
+    For manuscript : "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.genes.max.pext.010820.tsv.bgz"
+    :return:
+    """
+    ht = hl.read_matrix_table(all_possible_snv_pext_path)
+    ht = ht.filter_rows(~hl.is_missing(ht.tx_annotation))
+
+    # Filter only to variants that have a tx annotation value (aka all coding/exonic variants)
+    ht = ht.filter_rows(~hl.is_missing(ht.tx_annotation))
+
+    # Spread out all values for a variant
+    ht_exploded = ht.explode_rows(ht.tx_annotation)
+    ht_exploded = ht_exploded.annotate_rows(
+        all_tissues=ht_exploded.tx_annotation.drop('ensg', 'csq', 'symbol', 'lof', 'lof_flag'))
+
+    # For each gene, get the maximum pext value - we are interested in genes where the max pext value is low (0.2 cutoff for manuscript)
+    max_per_gene = ht_exploded.group_rows_by(
+        ht_exploded.tx_annotation.ensg, ht_exploded.tx_annotation.symbol).aggregate_rows(
+        max_pexts=hl.struct(**{key: hl.agg.max(val) for key, val in ht_exploded.all_tissues.items()})).result()
+
+    max_per_gene = max_per_gene.annotate_rows(**max_per_gene.max_pexts)
+
+    max_per_gene.rows().export(gene_maximums_out)
+
