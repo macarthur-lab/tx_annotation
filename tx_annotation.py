@@ -329,7 +329,7 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportion
     # Annotate mt with the gtex values (ie. join them)
     mt_kt = mt_kt.annotate(tx_data=gtex_table[mt_kt.vep.transcript_consequences.transcript_id])
 
-    # Group by gene, symbol and position
+    ## Group by gene, symbol and position
     ht_sum_of_bases = mt_kt.group_by(ensg=mt_kt.vep.transcript_consequences.gene_id,
                                      symbol=mt_kt.vep.transcript_consequences.gene_symbol,
                                      locus=mt_kt.locus).aggregate(
