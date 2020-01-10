@@ -115,7 +115,7 @@ print('wrote low')
 
 oe_constraint_bin_above_09 = ht_constraint.filter(ht_constraint.mean_expression > 0.9)
 run_maps_constraint_binexport(oe_constraint_bin_above_09,
-                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.high.expression.010920.tsv.bgz)
+                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.high.expression.010920.tsv.bgz")
 
 print('wrote high')
 
