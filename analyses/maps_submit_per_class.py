@@ -61,7 +61,7 @@ ht = ht.annotate(keep = hl.case(missing_false=True)
 
 ht = ht.filter(ht.keep == "keep")
 
-# Group pLoFs, remember can't calculate MAPs on frameshifts (no mutational model)
+# # Group pLoFs, remember can't calculate MAPs on frameshifts (no mutational model)
 ht = ht.annotate(worst_csq = hl.case(missing_false=True)
                  .when(ht.csq == "stop_gained", "pLoF")
                  .when(ht.csq == "splice_donor_variant", "pLoF")
@@ -72,24 +72,7 @@ ht = ht.annotate(worst_csq = hl.case(missing_false=True)
 
 print("finished processing")
 
-def add_rank(ht, field, ascending=True, total_genes=None, bins=10, defined_only=False):
-    if total_genes is None:
-        if defined_only:
-            total_genes = ht.aggregate(hl.agg.count_where(hl.is_defined(ht[field])))
-        else:
-            total_genes = ht.count()
-    rank_field = ht[field] if ascending else -ht[field]
-    ht = ht.key_by(_rank=rank_field).add_index(f'{field}_rank').key_by()
-    ht = ht.annotate(**{f'{field}_rank': hl.or_missing(
-        hl.is_defined(ht._rank), ht[f'{field}_rank']
-    )}).drop('_rank')
-    return ht.annotate(**{
-        f'{field}_bin': hl.int(ht[f'{field}_rank'] * bins / total_genes),
-        f'{field}_bin_6': hl.int(ht[f'{field}_rank'] * 6 / total_genes)
-    })
-
 constraint = hl.read_table(constraint_ht_path)
-constraint = add_rank(constraint, 'oe_lof_upper', defined_only=True)
 constraint = constraint.rename({"gene": "symbol"})
 constraint = constraint.key_by("symbol")
 ht = ht.key_by("symbol")
@@ -101,7 +84,7 @@ ht_constraint = ht.annotate(constraint_bin = constraint[ht.symbol].oe_lof_upper_
 genes_to_filter = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/max_pext_low_genes.010820.tsv.gz", force = True)
 genes_to_filter = genes_to_filter.key_by('symbol')
 
-ht_constraint = ht_constraint.filter(hl.is_defined(genes_to_filter[ht_constraint.key]))
+ht_constraint = ht_constraint.filter(~hl.is_defined(genes_to_filter[ht_constraint.key]))
 
 
 def run_maps_constraint_binexport(f, write, mut_ht = mutation_ht):
@@ -110,15 +93,15 @@ def run_maps_constraint_binexport(f, write, mut_ht = mutation_ht):
 
 oe_constraint_bin_below_01 = ht_constraint.filter(ht_constraint.mean_expression < 0.1)
 run_maps_constraint_binexport(oe_constraint_bin_below_01,
-                             "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.low.expression.010920.tsv.bgz")
+                             "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.low.expression.011720.tsv.bgz")
 print('wrote low')
 
 oe_constraint_bin_above_09 = ht_constraint.filter(ht_constraint.mean_expression > 0.9)
 run_maps_constraint_binexport(oe_constraint_bin_above_09,
-                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.high.expression.010920.tsv.bgz")
+                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.high.expression.011720.tsv.bgz")
 
 print('wrote high')
 
 oe_constraint_bin_between =  ht_constraint.filter((ht_constraint.mean_expression <= 0.9) & (ht_constraint.mean_expression >= 0.1))
 run_maps_constraint_binexport(oe_constraint_bin_between,
-                               "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.medium.expression.010920.tsv.bgz")
+                               "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.medium.expression.011720.tsv.bgz")
