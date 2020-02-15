@@ -14,8 +14,10 @@ all_bases_gtex_pext = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed
 all_bases_gtex_pext_filtered_tissues = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.0218219.ht"
 
 # GTEx files
-gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
-gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
+#gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
+#gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
+gtex_v7_tx_summary_ht_path='gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht'
+gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
 
 gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V8.tx_medians.042319.ht"
 gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v8.gene_expression_per_gene_per_tissue.042319.kt"

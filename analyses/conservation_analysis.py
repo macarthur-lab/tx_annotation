@@ -1,7 +1,5 @@
 from tx_annotation import *
 
-phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/phylocsf_data.tsv.gz"
-all_baselevel_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/all.baselevel.for_gnomad_browser.021218.ht"
 
 phylocsf = hl.import_table(phylocsf_file_path, impute = True)
 all_baselevel_ht = hl.read_table(all_baselevel_ht_path)

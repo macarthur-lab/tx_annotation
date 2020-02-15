@@ -44,4 +44,3 @@ splice_tx_proportions = get_expression_proportion(splice_tx_table, v7_tissues_to
 splice_tx_proportions = splice_tx_proportions.drop(splice_tx_proportions.expression_proportion_dict)
 splice_tx_proportions.write("gs://gnomad-berylc/tx-annotation/hail2/MAPs/data/ExAC.info.for.maps.splice.proportions.tsv.bgz")
 
-

@@ -1,7 +1,9 @@
 from tx_annotation import *
 
-clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_mt_path, "ht")
-mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+
+
+clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_ht_path, "ht")
+mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_ht_path, "ht")
 mt = mt.filter_rows(hl.len(mt.filters) == 0)
 
 oe_genes = import_gene_list(constraint, gene_column="gene", oe_threshold=0.35)
@@ -18,7 +20,7 @@ mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
                               filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
 mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotation))
 mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
-mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # AR genes
 
@@ -29,7 +31,7 @@ mt_gnomad_recessive = tx_annotate_mt(mt, gtex, "proportion", filter_to_genes=rec
 mt_gnomad_recessive = mt_gnomad_recessive.filter_rows(~hl.is_missing(mt_gnomad_recessive.tx_annotation))
 mt_gnomad_recessive = pull_out_worst_from_tx_annotate(mt_gnomad_recessive)
 mt_gnomad_recessive = mt_gnomad_recessive.drop("vep", "tx_annotation")
-mt_gnomad_recessive.rows().export("%sAR_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_recessive.rows().export("%sAR_genes.gnomad.exomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # LOEUF genes
 
@@ -42,7 +44,7 @@ mt_gnomad_pli_lof = mt_gnomad_pli_lof.select_rows('tx_annotation')
 mt_gnomad_pli_lof = pull_out_worst_from_tx_annotate(mt_gnomad_pli_lof)
 mt_gnomad_pli_lof = mt_gnomad_pli_lof.drop("tx_annotation")
 
-mt_gnomad_pli_lof.rows().export("%sloeuf_genes.plof.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_pli_lof.rows().export("%sloeuf_genes.plof.gnomad.exomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # synonymous variants
 mt_gnomad_pli_syn = tx_annotate_mt(mt, gtex, "proportion",
@@ -53,7 +55,7 @@ mt_gnomad_pli_syn = mt_gnomad_pli_syn.annotate_rows(tx_annotation=mt_gnomad_pli_
 mt_gnomad_pli_syn = mt_gnomad_pli_syn.select_rows('tx_annotation')
 mt_gnomad_pli_syn = pull_out_worst_from_tx_annotate(mt_gnomad_pli_syn)
 mt_gnomad_pli_syn = mt_gnomad_pli_syn.drop("tx_annotation")
-mt_gnomad_pli_syn.rows().export("%sloeuf_genes.syn.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_pli_syn.rows().export("%sloeuf_genes.syn.gnomad.exomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # ClinVar
 
@@ -65,7 +67,7 @@ mt_clinvar_hi = mt_clinvar_hi.filter_rows(~hl.is_missing(mt_clinvar_hi.tx_annota
 mt_clinvar_hi = pull_out_worst_from_tx_annotate(mt_clinvar_hi)
 mt_clinvar_hi = mt_clinvar_hi.annotate_rows(**mt_clinvar_hi.info)
 mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info")
-mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # AR genes
 mt_clinvar_ar = tx_annotate_mt(clinvar_mt, gtex,"proportion",
@@ -76,5 +78,5 @@ mt_clinvar_ar = mt_clinvar_ar.filter_rows(~hl.is_missing(mt_clinvar_ar.tx_annota
 mt_clinvar_ar = pull_out_worst_from_tx_annotate(mt_clinvar_ar)
 mt_clinvar_ar = mt_clinvar_ar.annotate_rows(**mt_clinvar_ar.info)
 mt_clinvar_ar = mt_clinvar_ar.drop("vep", "tx_annotation","info")
-mt_clinvar_ar.rows().export("%sAR_genes.clinvar.alleles.single.b37.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_clinvar_ar.rows().export("%sAR_genes.clinvar.alleles.single.b37.tx_annotated.021420.tsv.bgz" %out_dir)
 

@@ -4,7 +4,7 @@ from tx_annotation import *
 from datetime import datetime
 
 
-gtex_v7_isoform_tpms_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/reheadered.GTEx_Analysis_2016-01-15_v7_RSEMv1.2.22_transcript_tpm.txt.gz"
+
 gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
 context_hg19_max_per_gene = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/all.genes.max.pext.GTEx.v7.021420.tsv.bgz"
 
@@ -28,10 +28,11 @@ context_hg19_annotated = tx_annotate_mt(mt, gtex, "proportion",
 finished_annotation = datetime.now()
 print("Finished annotation ",finished_annotation)
 
-context_hg19_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021420.ht",overwrite=True)
+
+#context_hg19_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021420.ht",overwrite=True)
 
 # get maximum pext per gene to identify genes to filter from future analyses
-identify_maximum_pext_per_gene(context_hg19_annotated, context_hg19_max_per_gene)
+identify_maximum_pext_per_gene("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021420.ht", context_hg19_max_per_gene)
 
 stop = datetime.now()
 print("Finished writing",stop)

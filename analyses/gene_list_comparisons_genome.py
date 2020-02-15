@@ -1,6 +1,6 @@
 from tx_annotation import *
 
-mt, gtex = read_tx_annotation_tables(gnomad_genomes_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt, gtex = read_tx_annotation_tables(gnomad_genomes_release_mt_path, gtex_v7_tx_summary_ht_path, "ht")
 mt = mt.filter_rows(hl.len(mt.filters) == 0)
 
 oe_genes = import_gene_list(constraint, gene_column="gene", oe_threshold=0.35)
