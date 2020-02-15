@@ -98,7 +98,7 @@ def read_tx_annotation_tables(mt_path, gtex_tx_summary_path, mt_type="mt"):
 
 
 def tx_annotate_mt(mt, gtex, tx_annotation_type,
-                   tissues_to_filter = v7_tissues_to_drop, gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,
+                   tissues_to_filter = v7_tissues_to_drop, gtex_v7_gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
                    filter_to_csqs=all_coding_csqs, filter_to_genes=None, gene_column_in_mt=None, filter_to_homs=False,
                    out_tx_annotation_tsv=None, out_tx_annotation_kt=None):
 
@@ -187,8 +187,8 @@ def tx_annotate_mt(mt, gtex, tx_annotation_type,
     # First of all do you want proportions or expression?
     if tx_annotation_type == "proportion":
         print("Returning expression proportion")
-        gene_maximums_kt = hl.read_table(gene_maximums_kt_path)
-        tx_annotation_table = get_expression_proportion(tx_annotation_table, tissues_to_filter, gene_maximums_kt)
+        gene_maximums_ht = hl.read_table(gtex_v7_gene_maximums_ht_path)
+        tx_annotation_table = get_expression_proportion(tx_annotation_table, tissues_to_filter, gene_maximums_ht)
 
     #You can write the output that is exploded by variants-ensg-csq-symbol-LOFTEE-LOFTEEflag
     # and has a value for each tissue as column, either as a TSV or a KT
@@ -208,7 +208,7 @@ def tx_annotate_mt(mt, gtex, tx_annotation_type,
     return mt
 
 
-def get_expression_proportion(tx_table, tissues_to_filter, gene_maximum_kt):
+def get_expression_proportion(tx_table, tissues_to_filter, gene_maximum_ht):
 
     if tissues_to_filter:
         print("Filtering tissues:", tissues_to_filter)
@@ -221,7 +221,7 @@ def get_expression_proportion(tx_table, tissues_to_filter, gene_maximum_kt):
         tx_expression=
         {tissue_id: tx_table[tissue_id] for tissue_id in remaining_tissue_columns})
 
-    tx_table = tx_table.key_by('ensg').join(gene_maximum_kt.key_by("ensg"))
+    tx_table = tx_table.key_by('ensg').join(gene_maximum_ht.key_by("ensg"))
 
     expression_proportion_table = tx_table.annotate(
         expression_proportion_dict=
@@ -277,7 +277,7 @@ def fix_loftee_beta_nonlofs(tc):
 
 
 def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportions = None,
-                                       gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path):
+                                       gene_maximums_ht_path = gtex_v7_gene_maximums_t_path):
     gtex_table = gtex.key_by("transcript_id")
 
     if gene_list:
@@ -343,12 +343,12 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportion
         **{tissue: ht_sum_of_bases.sum_per_base[d[tissue]] for tissue in tissue_ids})
 
     if get_proportions:
-        gene_maximums_kt = hl.read_table(gene_maximums_kt_path)
+        gene_maximums_ht = hl.read_table(gene_maximums_ht_path)
         ht_sum_of_bases = ht_sum_of_bases.key_by(ht_sum_of_bases.locus)
         ht_sum_of_bases = ht_sum_of_bases.annotate(alleles = "filler")
         ht_sum_of_bases = get_expression_proportion(tx_table = ht_sum_of_bases,
                                                     tissues_to_filter = ["sum_per_base"],
-                                                    gene_maximum_kt  = gene_maximums_kt)
+                                                    gene_maximum_ht  = gene_maximums_ht)
         ht_sum_of_bases = ht_sum_of_bases.key_by(ht_sum_of_bases.locus)
         ht_sum_of_bases = ht_sum_of_bases.drop(ht_sum_of_bases.alleles)
 
