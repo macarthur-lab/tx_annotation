@@ -10,9 +10,10 @@ Annotating all of gnomAD, but with polyphen in there
 This is a terrible terrible way to do this, and I promise to the bioinformatics Gods that I will fix it
 
 from tx_annotation import *
+from datetime import datetime
 
 
-def get_expression_proportion_polyphen(tx_table, tissues_to_filter, gene_maximum_kt):
+def get_expression_proportion_polyphen(tx_table, tissues_to_filter, gene_maximum_ht):
 
     if tissues_to_filter:
         print("Filtering tissues:", tissues_to_filter)
@@ -25,7 +26,7 @@ def get_expression_proportion_polyphen(tx_table, tissues_to_filter, gene_maximum
         tx_expression=
         {tissue_id: tx_table[tissue_id] for tissue_id in remaining_tissue_columns})
 
-    tx_table = tx_table.key_by('ensg').join(gene_maximum_kt.key_by("ensg"))
+    tx_table = tx_table.key_by('ensg').join(gene_maximum_ht.key_by("ensg"))
 
     expression_proportion_table = tx_table.annotate(
         expression_proportion_dict=
@@ -51,7 +52,7 @@ def get_expression_proportion_polyphen(tx_table, tissues_to_filter, gene_maximum
 
 
 def tx_annotate_mt_polyphen(mt, gtex, tx_annotation_type,
-                   tissues_to_filter = v7_tissues_to_drop, gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,
+                   tissues_to_filter = v7_tissues_to_drop, gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
                    filter_to_csqs=all_coding_csqs, filter_to_genes=None, gene_column_in_mt=None, filter_to_homs=False,
                    out_tx_annotation_tsv=None, out_tx_annotation_kt=None):
 
@@ -140,8 +141,8 @@ def tx_annotate_mt_polyphen(mt, gtex, tx_annotation_type,
     # First of all do you want proportions or expression?
     if tx_annotation_type == "proportion":
         print("Returning expression proportion")
-        gene_maximums_kt = hl.read_table(gene_maximums_kt_path)
-        tx_annotation_table = get_expression_proportion_polyphen(tx_annotation_table, tissues_to_filter, gene_maximums_kt)
+        gene_maximums_ht = hl.read_table(gene_maximums_ht_path)
+        tx_annotation_table = get_expression_proportion_polyphen(tx_annotation_table, tissues_to_filter, gene_maximums_ht)
 
     #You can write the output that is exploded by variants-ensg-csq-symbol-LOFTEE-LOFTEEflag
     # and has a value for each tissue as column, either as a TSV or a KT
@@ -163,25 +164,27 @@ def tx_annotate_mt_polyphen(mt, gtex, tx_annotation_type,
 
 start = datetime.now()
 
-latest_gnomad_120518 = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
-mt, gtex = read_tx_annotation_tables(latest_gnomad_120518, gtex_v7_tx_summary_mt_path, 'ht')
+mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_ht_path, 'ht')
 
-mt_annotated = tx_annotate_mt_polyphen(mt, gtex,"proportion", gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,filter_to_csqs=all_coding_csqs)
+mt_annotated = tx_annotate_mt_polyphen(mt, gtex,"proportion",
+                                       gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
+                                       filter_to_csqs=all_coding_csqs)
 
 finished_annotation = datetime.now()
 print("Finished annotation ",finished_annotation)
 
-mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/gnomad.exomes.r2.1.1.sites.tx_annotated.withpolyphen.061319.ht",overwrite = True)
+mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/data/gnomad_release_annotated/gnomad.exomes.r2.1.1.sites.tx_annotated.withpolyphen.021520.ht",overwrite = True)
 
 stop = datetime.now()
 print("Finished writing",stop)
 print("total time", stop - start)
-'''
 
 '''
-Running MAPs
 '''
+Running MAPs
+
 # For code to run, need to git clone onto gnomad_lof on cluster
+'''
 import sys
 sys.path.append('/home/hail/gnomad_lof')
 
@@ -221,7 +224,7 @@ def load_tx_expression_data(tx_ht):
 context_ht = hl.read_table(context_ht_path)
 
 # Import and process gnomad 2.1.1 transcript annotation
-ht = hl.read_matrix_table('gs://gnomad-public/papers/2019-tx-annotation/gnomad.exomes.r2.1.1.sites.tx_annotated.withpolyphen.061319.ht')
+ht = hl.read_matrix_table('gs://gnomad-public/papers/2019-tx-annotation/data/gnomad_release_annotated/gnomad.exomes.r2.1.1.sites.tx_annotated.withpolyphen.021520.ht')
 ht = ht.filter_rows(~hl.is_missing(ht.tx_annotation))
 ht = ht.annotate_rows(tx_annotation = ht.tx_annotation.map(fix_loftee_beta_nonlofs))
 ht = load_tx_expression_data(ht)
@@ -280,7 +283,7 @@ ht_constraint = ht.annotate(constraint_bin = constraint[ht.symbol].oe_lof_upper_
                             constraint_value = constraint[ht.symbol].oe_lof_upper)
 
 # Addded in filtering for max pext low genes
-genes_to_filter = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/max_pext_low_genes.010820.tsv.gz", force = True)
+genes_to_filter = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/max_pext_low_genes.021520.tsv", force = True)
 genes_to_filter = genes_to_filter.key_by('symbol')
 
 ht_constraint = ht_constraint.filter(~hl.is_defined(genes_to_filter[ht_constraint.key]))
@@ -296,15 +299,15 @@ def run_maps_constraint_binexport(f, write, mut_ht = mutation_ht):
 
 oe_constraint_bin_below_01 = ht_constraint.filter(ht_constraint.mean_expression < 0.1)
 run_maps_constraint_binexport(oe_constraint_bin_below_01,
-                             "gs://gnomad-berylc/tx-annotation/hail2/reviewer_response/polyphen/maps.eachplofcategory.low.withpolyphe.expression.012020.tsv.bgz")
+                             "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.withpolyphen.low.021520.tsv.bgz")
 print('wrote low')
 
 oe_constraint_bin_above_09 = ht_constraint.filter(ht_constraint.mean_expression > 0.9)
 run_maps_constraint_binexport(oe_constraint_bin_above_09,
-                              "gs://gnomad-berylc/tx-annotation/hail2/reviewer_response/polyphen/maps.eachplofcategory.high.withpolyphe.expression.012020.tsv.bgz")
+                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.withpolyphen.high.021520.tsv.bgz")
 
 print('wrote high')
 
 oe_constraint_bin_between =  ht_constraint.filter((ht_constraint.mean_expression <= 0.9) & (ht_constraint.mean_expression >= 0.1))
 run_maps_constraint_binexport(oe_constraint_bin_between,
-                               "gs://gnomad-berylc/tx-annotation/hail2/reviewer_response/polyphen/maps.eachplofcategory.medium.withpolyphen.expression.012020.tsv.bgz")
+                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.withpolyphen.medium.021520.tsv.bgz")

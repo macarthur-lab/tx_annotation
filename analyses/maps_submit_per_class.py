@@ -29,7 +29,7 @@ context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo
 context_ht = hl.read_table(context_ht_path)
 
 # Import and process gnomad 2.1.1 transcript annotation
-ht = hl.read_matrix_table('gs://gnomad-public/papers/2019-tx-annotation/gnomad.exomes.r2.1.1.sites.tx_annotated.021319.ht')
+ht = hl.read_matrix_table('gs://gnomad-public/papers/2019-tx-annotation/data/gnomad_release_annotated/gnomad.exomes.r2.1.1.sites.tx_annotated.021520.ht')
 ht = ht.filter_rows(~hl.is_missing(ht.tx_annotation))
 ht = ht.annotate_rows(tx_annotation = ht.tx_annotation.map(fix_loftee_beta_nonlofs))
 ht = load_tx_expression_data(ht)
@@ -62,21 +62,21 @@ ht = ht.annotate(keep = hl.case(missing_false=True)
 ht = ht.filter(ht.keep == "keep")
 
 # # Group pLoFs, remember can't calculate MAPs on frameshifts (no mutational model)
-# ht = ht.annotate(worst_csq = hl.case(missing_false=True)
-#                  .when(ht.csq == "stop_gained", "pLoF")
-#                  .when(ht.csq == "splice_donor_variant", "pLoF")
-#                  .when(ht.csq == "splice_acceptor_variant", "pLoF")
-#                  .when(ht.csq == "missense_variant", "missense_variant")
-#                  .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),
-#                 lof = ht.lof)
+ht = ht.annotate(worst_csq = hl.case(missing_false=True)
+                 .when(ht.csq == "stop_gained", "pLoF")
+                 .when(ht.csq == "splice_donor_variant", "pLoF")
+                 .when(ht.csq == "splice_acceptor_variant", "pLoF")
+                 .when(ht.csq == "missense_variant", "missense_variant")
+                 .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),
+                lof = ht.lof)
 
 # # Group pLoFs, remember can't calculate MAPs on frameshifts (no mutational model)
-ht = ht.annotate(worst_csq = hl.case(missing_false=True)
-                 .when(ht.csq == "stop_gained", "stop_gained")
-                 .when(ht.csq == "splice_donor_variant", "splice_donor_variant")
-                 .when(ht.csq == "splice_acceptor_variant", "splice_acceptor_variant")
-                 .when(ht.csq == "missense_variant", "missense_variant")
-                 .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),lof = ht.lof)
+#ht = ht.annotate(worst_csq = hl.case(missing_false=True)
+#                 .when(ht.csq == "stop_gained", "stop_gained")
+#                 .when(ht.csq == "splice_donor_variant", "splice_donor_variant")
+#                 .when(ht.csq == "splice_acceptor_variant", "splice_acceptor_variant")
+#                 .when(ht.csq == "missense_variant", "missense_variant")
+#                 .when(ht.csq == "synonymous_variant", "synonymous_variant").default('irrev_var'),lof = ht.lof)
 
 print("finished processing")
 
@@ -89,7 +89,7 @@ ht_constraint = ht.annotate(constraint_bin = constraint[ht.symbol].oe_lof_upper_
                             constraint_value = constraint[ht.symbol].oe_lof_upper)
 
 # Addded in filtering for max pext low genes
-genes_to_filter = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/max_pext_low_genes.010820.tsv.gz", force = True)
+genes_to_filter = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/max_pext_low_genes.021520.tsv", force = True)
 genes_to_filter = genes_to_filter.key_by('symbol')
 
 ht_constraint = ht_constraint.filter(~hl.is_defined(genes_to_filter[ht_constraint.key]))
@@ -101,15 +101,15 @@ def run_maps_constraint_binexport(f, write, mut_ht = mutation_ht):
 
 oe_constraint_bin_below_01 = ht_constraint.filter(ht_constraint.mean_expression < 0.1)
 run_maps_constraint_binexport(oe_constraint_bin_below_01,
-                             "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.low.each.plof.expression.011920.tsv.bgz")
+                             "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.low.expression.021520.tsv.bgz")
 print('wrote low')
 
 oe_constraint_bin_above_09 = ht_constraint.filter(ht_constraint.mean_expression > 0.9)
 run_maps_constraint_binexport(oe_constraint_bin_above_09,
-                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.high.each.plof.expression.011920.tsv.bgz")
+                              "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.high.expression.021520.tsv.bgz")
 
 print('wrote high')
 
 oe_constraint_bin_between =  ht_constraint.filter((ht_constraint.mean_expression <= 0.9) & (ht_constraint.mean_expression >= 0.1))
 run_maps_constraint_binexport(oe_constraint_bin_between,
-                               "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.eachplofcategory.medium.each.plof.expression.011920.tsv.bgz")
+                               "gs://gnomad-public/papers/2019-tx-annotation/results/maps/maps.medium.expression.021520.tsv.bgz")

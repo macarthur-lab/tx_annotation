@@ -11,11 +11,11 @@ annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo
 '''
 
 
-mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_mt_path, "mt")
+mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_ht_path, "mt")
 ddid_asd = tx_annotate_mt(mt, gtex, "proportion",
                           filter_to_csqs=all_coding_csqs)
 ddid_asd = ddid_asd.filter_rows(~hl.is_missing(ddid_asd.tx_annotation))
 ddid_asd = ddid_asd.annotate_rows(tx_annotation=ddid_asd.tx_annotation.map(fix_loftee_beta_nonlofs))
 ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 ddid_asd.rows().export("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/"
-                       "asd_ddid_de_novos.tx_annotated.021819.tsv.bgz")
+                       "asd_ddid_de_novos.tx_annotated.021520.tsv.bgz")

@@ -17,7 +17,7 @@ mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
                               filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
 mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotation))
 mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
-mt_gnomad_hi.rows().export("%sHI_genes.gnomad.genomes.r2.1.tx_annotated.021619.tsv.bgz" %out_dir)
+mt_gnomad_hi.rows().export("%sHI_genes.gnomad.genomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # AR genes
 
@@ -28,7 +28,7 @@ mt_gnomad_recessive = tx_annotate_mt(mt, gtex, "proportion", filter_to_genes=rec
 mt_gnomad_recessive = mt_gnomad_recessive.filter_rows(~hl.is_missing(mt_gnomad_recessive.tx_annotation))
 mt_gnomad_recessive = pull_out_worst_from_tx_annotate(mt_gnomad_recessive)
 mt_gnomad_recessive = mt_gnomad_recessive.drop("vep", "tx_annotation")
-mt_gnomad_recessive.rows().export("%sAR_genes.gnomad.genomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_recessive.rows().export("%sAR_genes.gnomad.genomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # LOEUF genes
 
@@ -41,7 +41,7 @@ mt_gnomad_pli_lof = mt_gnomad_pli_lof.select_rows('tx_annotation')
 mt_gnomad_pli_lof = pull_out_worst_from_tx_annotate(mt_gnomad_pli_lof)
 mt_gnomad_pli_lof = mt_gnomad_pli_lof.drop("tx_annotation")
 
-mt_gnomad_pli_lof.rows().export("%sloeuf_genes.plof.gnomad.genomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_pli_lof.rows().export("%sloeuf_genes.plof.gnomad.genomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 # synonymous variants
 mt_gnomad_pli_syn = tx_annotate_mt(mt, gtex, "proportion",
@@ -52,4 +52,4 @@ mt_gnomad_pli_syn = mt_gnomad_pli_syn.annotate_rows(tx_annotation=mt_gnomad_pli_
 mt_gnomad_pli_syn = mt_gnomad_pli_syn.select_rows('tx_annotation')
 mt_gnomad_pli_syn = pull_out_worst_from_tx_annotate(mt_gnomad_pli_syn)
 mt_gnomad_pli_syn = mt_gnomad_pli_syn.drop("tx_annotation")
-mt_gnomad_pli_syn.rows().export("%sloeuf_genes.syn.gnomad.genomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_pli_syn.rows().export("%sloeuf_genes.syn.gnomad.genomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
