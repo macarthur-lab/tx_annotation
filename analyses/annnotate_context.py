@@ -4,18 +4,13 @@ from tx_annotation import *
 from datetime import datetime
 
 
-
-gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
-context_hg19_max_per_gene = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/all.genes.max.pext.GTEx.v7.021420.tsv.bgz"
-
-
-print(gtex_v7_isoform_tpms_path)
+print(gtex_v7_tx_summary_ht_path)
 print(gtex_v7_gene_maximums_ht_path)
 
 start = datetime.now()
 print("Starting on",start)
 
-mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_mt_path, 'ht')
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_ht_path, 'ht')
 start_annotation = datetime.now()
 
 print("Starting tx annotation on", start_annotation)
@@ -29,10 +24,11 @@ finished_annotation = datetime.now()
 print("Finished annotation ",finished_annotation)
 
 
-#context_hg19_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021420.ht",overwrite=True)
+context_hg19_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021520.ht",overwrite=True)
 
 # get maximum pext per gene to identify genes to filter from future analyses
-identify_maximum_pext_per_gene("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021420.ht", context_hg19_max_per_gene)
+identify_maximum_pext_per_gene("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021520.ht",
+                               "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/all.genes.max.pext.GTEx.v7.021520.tsv.bgz")
 
 stop = datetime.now()
 print("Finished writing",stop)
@@ -53,4 +49,4 @@ context_hg19_annotated = context_hg19_annotated.annotate_rows(chrom=context_hg19
 
 context_hg19_annotated = context_hg19_annotated.select_rows("chrom", "pos", "ref", "alt", "tx_annotation")
 context_hg19_annotated.count_rows()
-context_hg19_annotated.rows().export("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.GTEx.v7.021420.tsv.bgz")
+context_hg19_annotated.rows().export("gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.GTEx.v7.021520.tsv.bgz")
