@@ -98,7 +98,7 @@ def read_tx_annotation_tables(mt_path, gtex_tx_summary_path, mt_type="mt"):
 
 
 def tx_annotate_mt(mt, gtex, tx_annotation_type,
-                   tissues_to_filter = v7_tissues_to_drop, gtex_v7_gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
+                   tissues_to_filter = v7_tissues_to_drop, gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
                    filter_to_csqs=all_coding_csqs, filter_to_genes=None, gene_column_in_mt=None, filter_to_homs=False,
                    out_tx_annotation_tsv=None, out_tx_annotation_kt=None):
 
@@ -187,7 +187,7 @@ def tx_annotate_mt(mt, gtex, tx_annotation_type,
     # First of all do you want proportions or expression?
     if tx_annotation_type == "proportion":
         print("Returning expression proportion")
-        gene_maximums_ht = hl.read_table(gtex_v7_gene_maximums_ht_path)
+        gene_maximums_ht = hl.read_table(gene_maximums_ht_path)
         tx_annotation_table = get_expression_proportion(tx_annotation_table, tissues_to_filter, gene_maximums_ht)
 
     #You can write the output that is exploded by variants-ensg-csq-symbol-LOFTEE-LOFTEEflag
