@@ -26,8 +26,8 @@ gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/da
 # HBDR fetal file
 
 # Gene lists
-curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/HI_genes_100417.tsv"
-recessive_disease_genes = 'gs://gnomad-public/papers/2019-tx-annotation/data/all_ar.tsv'
+curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/gene_lists/HI_genes_100417.tsv"
+recessive_disease_genes = 'gs://gnomad-public/papers/2019-tx-annotation/data/gene_lists/all_ar.tsv'
 constraint = "gs://gnomad-resources/lof_paper/full_lof_metrics_by_transcript_an_adj_by_gene.txt.bgz"
 
 # CSQ terms
@@ -46,7 +46,8 @@ phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/phylocsf
 
 
 # Fetal RNA-seq
-hbdr_fetal_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.RSEM.sample_specific.tx_medians.021719.mt"
+hbdr_fetal_tissue_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR_fetal_RNAseq/HBDR.tissue_names.medians.021520.mt"
+hbdr_fetal_tissue_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.gene_expression_per_gene_per_tissue.021520.ht"
 
 
 
