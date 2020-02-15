@@ -14,16 +14,11 @@ all_bases_gtex_pext = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed
 all_bases_gtex_pext_filtered_tissues = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.0218219.ht"
 
 # GTEx files
-#gtex_v7_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
-#gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt"
 gtex_v7_tx_summary_ht_path='gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht'
 gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
 
 gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V8.tx_medians.042319.ht"
 gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v8.gene_expression_per_gene_per_tissue.042319.kt"
-
-
-# HBDR fetal file
 
 # Gene lists
 curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/gene_lists/HI_genes_100417.tsv"
@@ -41,18 +36,13 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
                       "Cervix_Ectocervix","Cervix_Endocervix", "FallopianTube", "Kidney_Cortex",
                       "MinorSalivaryGland", "Uterus", "Ovary","Testis", "Vagina",
                       "Cells_EBV_transformedlymphocytes", "Cells_Transformedfibroblasts", "Prostate"]
-phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/phylocsf_data.tsv.gz"
-
+phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.gz"
 
 
 # Fetal RNA-seq
 hbdr_fetal_tissue_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR_fetal_RNAseq/HBDR.tissue_names.medians.021520.mt"
-hbdr_fetal_tissue_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.gene_expression_per_gene_per_tissue.021520.ht"
+hbdr_fetal_tissue_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR_fetal_RNAseq/HBDR.gene_expression_per_gene_per_tissue.021520.ht"
 
-
-
-# Unsure if can share as behind GTEx dbGAP
-#gtex_v7_rsem_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.ht"
 
 def make_clinvar_hail2(clinvar_vcf_path, clinvar_variants_table, clinvar_mt_out_path):
     """
