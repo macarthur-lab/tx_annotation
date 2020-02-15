@@ -277,7 +277,7 @@ def fix_loftee_beta_nonlofs(tc):
 
 
 def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportions = None,
-                                       gene_maximums_ht_path = gtex_v7_gene_maximums_t_path):
+                                       gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path):
     gtex_table = gtex.key_by("transcript_id")
 
     if gene_list:
