@@ -38,7 +38,7 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
                       "MinorSalivaryGland", "Uterus", "Ovary","Testis", "Vagina",
                       "Cells_EBV_transformedlymphocytes", "Cells_Transformedfibroblasts", "Prostate"]
 
-phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.bbgz"
+phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.bgz"
 
 
 # Fetal RNA-seq
