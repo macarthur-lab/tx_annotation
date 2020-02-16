@@ -10,6 +10,7 @@ context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo
 
 # Precomputed HTs with pext for all possible bases (calculated from context_ht_path, script for generating : get_all_possible_snvs.py
 # The first version includes all of GTEx tissues, the second is the version used in the manuscript, that has certain tissues filtered (see manuscript)
+all_baselevel_ht_path = "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/all.baselevel.021520.ht"
 all_bases_gtex_pext = "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/all.baselevel.021520.tsv.bgz"
 #all_bases_gtex_pext_filtered_tissues = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.0218219.ht"
 
@@ -36,7 +37,7 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
                       "Cervix_Ectocervix","Cervix_Endocervix", "FallopianTube", "Kidney_Cortex",
                       "MinorSalivaryGland", "Uterus", "Ovary","Testis", "Vagina",
                       "Cells_EBV_transformedlymphocytes", "Cells_Transformedfibroblasts", "Prostate"]
-phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.bgz"
+phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.gz"
 
 
 # Fetal RNA-seq
