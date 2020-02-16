@@ -330,9 +330,8 @@ def get_baselevel_expression_for_genes(mt, gtex, gene_list= None, get_proportion
     mt_kt = mt_kt.annotate(tx_data=gtex_table[mt_kt.vep.transcript_consequences.transcript_id])
 
     ## Group by gene, symbol and position
-    ht_sum_of_bases = mt_kt.group_by(ensg=mt_kt.vep.transcript_consequences.gene_id,
-                                     symbol=mt_kt.vep.transcript_consequences.gene_symbol,
-                                     locus=mt_kt.locus).aggregate(
+    ht_sum_of_bases = mt_kt.group_by(locus=mt_kt.locus, ensg=mt_kt.vep.transcript_consequences.gene_id,
+                                     symbol=mt_kt.vep.transcript_consequences.gene_symbol).aggregate(
         sum_per_base=hl.agg.array_sum(mt_kt.tx_data.agg_expression))
 
     tissue_ids = sorted([y.tissue.replace("-", "_").replace(" ", "_").replace("(", "_").replace(")", "_") for y in
