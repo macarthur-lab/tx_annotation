@@ -11,7 +11,7 @@ manual_curation = manual_curation.key_rows_by(manual_curation.locus, manual_cura
 manual_curation = hl.vep(manual_curation, vep_config)
 
 # Tx annotate, reading in the gnomAD mt as a filler so I don't have to write and re-read in manual_curation
-filler, gtex = read_tx_annotation_tables(gnomad_release_mt_path,  gtex_v7_tx_summary_mt_path, "ht")
+filler, gtex = read_tx_annotation_tables(gnomad_release_mt_path,  gtex_v7_tx_summary_ht_path, "ht")
 tx_table = tx_annotate_mt(manual_curation, gtex, "proportion", filter_to_csqs=all_coding_csqs)
 
 tx_table.rows().export("gs://gnomad-public/papers/2019-tx-annotation/results/gnomad.HIgene.curation.joint.tx_annotated.021219.tsv.bgz")

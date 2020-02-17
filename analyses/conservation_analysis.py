@@ -1,7 +1,7 @@
 from tx_annotation import *
 
 
-phylocsf = hl.import_table(phylocsf_file_path, impute = True)
+phylocsf = hl.import_table(phylocsf_file_path, impute=True)
 all_baselevel_ht = hl.read_table(all_baselevel_ht_path)
 
 # Remove tissues for consistency and recalculate the mean
@@ -39,4 +39,4 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
                                         hl.agg.filter(~hl.is_nan(all_baselevel_ht.mean_prop_conservation),
                                                       hl.agg.mean(all_baselevel_ht.mean_prop_conservation))))
 
-mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
+mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021520.tsv.bgz")
