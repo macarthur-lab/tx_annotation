@@ -21,12 +21,12 @@ mt, salmon_lncrna = read_tx_annotation_tables(latest_gnomad_120518, salmon_brain
 start_annotation = datetime.now()
 print("Starting tx annotation on",start_annotation)
 # mt_annotated = tx_annotate_mt(mt, salmon_pc,"proportion",
-#                               gene_maximums_kt_path=salmon_brain_pc_only_max,
+#                               gene_maximums_ht_path=salmon_brain_pc_only_max,
 #                               filter_to_csqs=all_coding_csqs,
 #                               tissues_to_filter=None)
 
 mt_annotated = tx_annotate_mt(mt, salmon_lncrna,"proportion",
-                              gene_maximums_kt_path=salmon_brain_lncrna_max,
+                              gene_maximums_ht_path=salmon_brain_lncrna_max,
                               filter_to_csqs=all_coding_csqs,
                               tissues_to_filter=None)
 
@@ -34,7 +34,8 @@ finished_annotation = datetime.now()
 print("Finished annotation ",finished_annotation)
 
 # mt_annotated.write("%sgnomad.exomes.r2.1.1.sites.salmon_pc_only.083119.ht"%base,overwrite = True)
-mt_annotated.write("%sgnomad.exomes.r2.1.1.sites.salmon_pc_lncRNA.090119.ht"%base,overwrite = True)
+mt_annotated.write("%sgnomad.exomes.r2.1.1.sites.salmon_pc_lncRNA.090119.ht" %base,
+                   overwrite = True)
 
 print("Done")
 

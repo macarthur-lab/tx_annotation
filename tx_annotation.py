@@ -100,7 +100,7 @@ def read_tx_annotation_tables(mt_path, gtex_tx_summary_path, mt_type="mt"):
 def tx_annotate_mt(mt, gtex, tx_annotation_type,
                    tissues_to_filter = v7_tissues_to_drop, gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
                    filter_to_csqs=all_coding_csqs, filter_to_genes=None, gene_column_in_mt=None, filter_to_homs=False,
-                   out_tx_annotation_tsv=None, out_tx_annotation_kt=None):
+                   out_tx_annotation_tsv=None, out_tx_annotation_ht=None):
 
 
     """
@@ -120,8 +120,8 @@ def tx_annotate_mt(mt, gtex, tx_annotation_type,
     Example = ["stop_gained","splice_donor_variant", "splice_acceptor_variant","frameshift_variant"]
     :param None or str out_tx_annotation_tsv: Default None.
     If you'd like to write out the results table as a tsv, provide a tsv path
-    :param None or str out_tx_annotation_kt: Default None.
-    If you'd like to write out the results table as a Hail 0.2 table, provide a .kt path
+    :param None or str out_tx_annotation_ht: Default None.
+    If you'd like to write out the results table as a Hail 0.2 table, provide a .ht path
     :param bool filter_to_homs: Default False
     If True, filter to variants with at least one homozygote in dataset
     :return: Table with columns: variant, worst_csq, ensg, LOFTEE LOF, LOFTEE LOF Flag, transcript-aware expression
@@ -197,9 +197,9 @@ def tx_annotate_mt(mt, gtex, tx_annotation_type,
         print("Writing tsv file to %s" %out_tx_annotation_tsv)
         tx_annotation_table.export(out_tx_annotation_tsv)
 
-    if out_tx_annotation_kt:
-        print("Writing Table to %s" % out_tx_annotation_kt)
-        tx_annotation_table.write(out_tx_annotation_kt)
+    if out_tx_annotation_ht:
+        print("Writing Table to %s" % out_tx_annotation_ht)
+        tx_annotation_table.write(out_tx_annotation_ht)
 
     tx_annotation_table = tx_annotation_table.key_by(tx_annotation_table.locus, tx_annotation_table.alleles)
     tx_annotation_table = tx_annotation_table.collect_by_key('tx_annotation')

@@ -18,8 +18,8 @@ all_bases_gtex_pext = "gs://gnomad-berylc/tx-annotation/hail2/browser_integratio
 gtex_v7_tx_summary_ht_path='gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht'
 gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
 
-gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V8.tx_medians.042319.ht"
-gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v8.gene_expression_per_gene_per_tissue.042319.kt"
+gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH38/GTEx.V8.tx_medians.021520.ht"
+gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH38/GTEx.v8.gene_expression_per_gene_per_tissue.021520.ht"
 
 # Gene lists
 curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/gene_lists/HI_genes_100417.tsv"
@@ -190,29 +190,29 @@ def get_gene_expression(gtex_tx_summary_path, gene_expression_out):
     gene_expression.write(gene_expression_out, overwrite=True)
 
 
-def import_and_modify_gene_maximums(gtex_gene_maximums_table_tsv_path, gtex_gene_maximums_table_kt_out_path):
+def import_and_modify_gene_maximums(gtex_gene_maximums_table_tsv_path, gtex_gene_maximums_table_ht_out_path):
     """
     This function is deprecated
     :param gtex_v7_gene_maximums_table_path:
     Example: =  "gs://gnomad-berylc/tx-annotation/hail2/data/GTEx.v7.max_expression_per_base_per_tissue.021118.tsv"):
     :return:
     """
-    gene_maximum_kt = hl.import_table(gtex_gene_maximums_table_tsv_path, impute=True, force_bgz=True)
-    if 'Name' in list(gene_maximum_kt.row):
-        gene_maximum_kt = gene_maximum_kt.rename({"Name": "ensg"})
+    gene_maximum_ht = hl.import_table(gtex_gene_maximums_table_tsv_path, impute=True, force_bgz=True)
+    if 'Name' in list(gene_maximum_ht.row):
+        gene_maximum_ht = gene_maximum_ht.rename({"Name": "ensg"})
 
-    tissues = list(set(gene_maximum_kt.row) - set(['ensg', 'Description','representatative bases']))
+    tissues = list(set(gene_maximum_ht.row) - set(['ensg', 'Description','representatative bases']))
 
-    gene_maximum_kt = gene_maximum_kt.annotate(
+    gene_maximum_ht = gene_maximum_ht.annotate(
         gene_maximum_dict={tissue_id.replace("-", "_").replace(" ", "_").replace("(", "_").replace(")", "_"):
-                               gene_maximum_kt[tissue_id] for tissue_id in tissues})
+                               gene_maximum_ht[tissue_id] for tissue_id in tissues})
 
-    gene_maximum_kt = gene_maximum_kt.drop(*tissues)
+    gene_maximum_ht = gene_maximum_ht.drop(*tissues)
 
-    gene_maximum_kt = gene_maximum_kt.key_by(ensg=gene_maximum_kt.ensg.split("\\.")[0])
+    gene_maximum_ht = gene_maximum_ht.key_by(ensg=gene_maximum_ht.ensg.split("\\.")[0])
 
 
-    gene_maximum_kt.write(gtex_gene_maximums_table_kt_out_path, overwrite=True)
+    gene_maximum_ht.write(gtex_gene_maximums_table_ht_out_path, overwrite=True)
 
 def identify_maximum_pext_per_gene(all_possible_snv_pext_path, gene_maximums_out):
     """

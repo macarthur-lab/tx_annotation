@@ -37,7 +37,7 @@ latest_gnomad_120518 = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes
 rsem_brain_cortex_out_path = "gs://gnomad-berylc/tx-annotation/hail2/salmon_rsem/rsem.GTEx.v7.brain.cortex.tx_medians.021519.mt"
 mt, gtex = read_tx_annotation_tables(latest_gnomad_120518, rsem_brain_cortex_out_path, 'ht')
 mt_annotated = tx_annotate_mt(mt, gtex,"proportion", tissues_to_filter = None,
-                              gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,
+                              gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
                               filter_to_csqs=all_coding_csqs)
 mt_annotated.write("gs://gnomad-berylc/tx-annotation/hail2/salmon_rsem/rsem.brain_cortex.gnomad.exomes.r2.1.1.sites.tx_annotated.021519.ht")
 '''

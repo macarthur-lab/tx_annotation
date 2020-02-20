@@ -27,7 +27,7 @@ salmon_brain_cortex_out_path = "gs://gnomad-berylc/tx-annotation/hail2/salmon_rs
 #
 # mt_annotated = tx_annotate_mt(mt, rsem, "proportion",
 #                               tissues_to_filter=None,
-#                               gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,
+#                               gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
 #                               filter_to_csqs=all_coding_csqs)
 #
 # print("Finished annotation ")
@@ -43,8 +43,13 @@ salmon_brain_cortex_out_path = "gs://gnomad-berylc/tx-annotation/hail2/salmon_rs
 
 mt, rsem = read_tx_annotation_tables(gnomad_release_mt_path, rsem_brain_cortex_path, 'ht')
 
-mt_annotated = tx_annotate_mt(mt, rsem,"proportion", tissues_to_filter=None, gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,filter_to_csqs=all_coding_csqs)
-mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/salmon_rsem/data/gnomad.exomes.r2.1.1.sites.tx_annotated.brain.cortex.RSEM.020520.mt",overwrite = True)
+mt_annotated = tx_annotate_mt(mt, rsem,"proportion",
+                              tissues_to_filter=None,
+                              gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
+                              filter_to_csqs=all_coding_csqs)
+mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/"
+                   "salmon_rsem/data/gnomad.exomes.r2.1.1.sites.tx_annotated.brain.cortex.RSEM.020520.mt",
+                   overwrite = True)
 
 
 # Annotate gnomAD sites MT (I had already done this a year ago but want to make sure it's correct so doing it again)
@@ -56,7 +61,7 @@ mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/salmon_
 # print("Starting tx annotation on")
 # mt_annotated = tx_annotate_mt(mt, salmon, "proportion",
 #                               tissues_to_filter=None,
-#                               gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,
+#                               gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
 #                               filter_to_csqs=all_coding_csqs)
 # print("Finished annotation ")
 #
@@ -69,5 +74,10 @@ mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/salmon_
 print("starting salmon")
 mt, salmon = read_tx_annotation_tables(gnomad_release_mt_path, salmon_brain_cortex_out_path, 'ht')
 
-mt_annotated = tx_annotate_mt(mt, salmon,"proportion", tissues_to_filter=None,gene_maximums_kt_path = gtex_v7_gene_maximums_kt_path,filter_to_csqs=all_coding_csqs)
-mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/salmon_rsem/data/gnomad.exomes.r2.1.1.sites.tx_annotated.brain.cortex.salmon.020520.mt",overwrite = True)
+mt_annotated = tx_annotate_mt(mt, salmon,"proportion",
+                              tissues_to_filter=None,
+                              gene_maximums_ht_path = gtex_v7_gene_maximums_ht_path,
+                              filter_to_csqs=all_coding_csqs)
+mt_annotated.write("gs://gnomad-public/papers/2019-tx-annotation/results/salmon_rsem/data/"
+                   "gnomad.exomes.r2.1.1.sites.tx_annotated.brain.cortex.salmon.020520.mt",
+                   overwrite = True)
