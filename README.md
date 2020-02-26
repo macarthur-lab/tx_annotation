@@ -22,12 +22,12 @@ Please be aware that while we don't expect any issues, the files may be iterated
 We will walk through an example of annotating *de novo* variants in autism and developmental delay / intellectual disability with the GTEx v7 dataset. 
 
 #### 0) Start a cluster and a Hail environment
-We recommend using [cloud tools from Neale lab](https://github.com/Nealelab/cloudtools) for Google Cloud.
+We recommend using [hailctl dataproc from the Hail team](https://hail.is/docs/0.2/hail_on_the_cloud.html) for Google Cloud. Note that this is a successor to cloudtools from Ben Neale's lab.
 
 You will need the gnomAD and tx-annotation init scripts, which are both publically available. To start a cluster:
 
 ```
-cluster start tutorial --worker-machine-type n1-highmem-8 --spark 2.2.0 --version 0.2 --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
+hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
 ```
 
 At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
