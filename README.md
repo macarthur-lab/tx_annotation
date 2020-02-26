@@ -41,7 +41,9 @@ This is what the first line of the file looks like :
 
 Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. The VEP columns in the file are based on the canonical trasncript, so we will re-VEP. 
 
-In order to add pext values, you must annotate with VEP. This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
+Note that unless the variant file you're using is already available as HT that's been vep'd in Hail, we recommend running VEP since the pext code uses the nested VEP format for calculation. 
+
+This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
 
 1 - Import file as a table 
 ```python
