@@ -12,14 +12,10 @@ context_ht_path = "gs://gnomad-public/papers/2019-flagship-lof/v1.0/context/Homo
 # The first version includes all of GTEx tissues, the second is the version used in the manuscript, that has certain tissues filtered (see manuscript)
 all_baselevel_ht_path = "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/all.baselevel.021520.ht"
 all_bases_gtex_pext = "gs://gnomad-berylc/tx-annotation/hail2/browser_integration/all.baselevel.021520.tsv.bgz"
-#all_bases_gtex_pext_filtered_tissues = "gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.0218219.ht"
 
 # GTEx files
 gtex_v7_tx_summary_ht_path='gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht'
 gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
-
-gtex_v8_tx_summary_mt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH38/GTEx.V8.tx_medians.021520.ht"
-gtex_v8_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH38/GTEx.v8.gene_expression_per_gene_per_tissue.021520.ht"
 
 # Gene lists
 curated_haploinsufficient_genes = "gs://gnomad-public/papers/2019-tx-annotation/data/gene_lists/HI_genes_100417.tsv"
@@ -39,7 +35,6 @@ v7_tissues_to_drop = ["Bladder", "Brain_Spinalcord_cervicalc_1_", "Brain_Substan
                       "Cells_EBV_transformedlymphocytes", "Cells_Transformedfibroblasts", "Prostate"]
 
 phylocsf_file_path = "gs://gnomad-public/papers/2019-tx-annotation/data/other_data/phylocsf_data.tsv.bgz"
-
 
 # Fetal RNA-seq
 hbdr_fetal_tissue_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR_fetal_RNAseq/HBDR.tissue_names.medians.021520.mt"
