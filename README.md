@@ -33,7 +33,7 @@ hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-ini
 At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
 
 #### 1) Prepare the variant file 
-The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
+The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt
 
 This is what the first line of the file looks like : 
 > DataSet CHROM POSITION  REF ALT	GENE_NAME	VEP_functional_class_canonical	MPC	loftee	group
@@ -45,7 +45,7 @@ In order to add pext values, you must annotate with VEP. This is how to import t
 
 1 - Import file as a table 
 ```python
-rt = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt")
+rt = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt")
 ```
 2 - Define the variant in terms of chrom:pos:ref:alt and have Hail parse it, which will create locus and alleles fields
 ```python
