@@ -30,7 +30,11 @@ You will need the gnomAD and tx-annotation init scripts, which are both publical
 hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
 ```
 
-At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
+To connect to the clustter 
+```
+hailctl dataproc connect tutorial nb
+```
+And start a Hail Jupyter notebook
 
 #### 1) Prepare the variant file 
 The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt
@@ -44,6 +48,8 @@ Again, we will only use the chrom, pos, ref, alt columns, and will add additiona
 Note that unless the variant file you're using is already available as HT that's been vep'd in Hail, we recommend running VEP since the pext code uses the nested VEP format for calculation. 
 
 This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
+
+0 - At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
 
 1 - Import file as a table 
 ```python
