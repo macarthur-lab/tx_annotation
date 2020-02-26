@@ -199,33 +199,23 @@ Note that scripts for these and other analyses are availabel in `/analyses/` fol
 
 
 #### Getting baselevel expression values 
-The idea here is that you annotate the expression of a given *position* as opposed to a variant consequence pair. The baselevel pext value will always be higher than any of the variant annotation pext values, because the base value is just the sum of the expression of protein coding transcripts that overlap the coding base. This baselevel value is what we show in the gnomAD browser. Just because a position has a high baselevel value though, *does not* mean that say, a pLoF at that position has a high pLoF value.
+The idea here is that you annotate the expression of a given *position* as opposed to a variant consequence pair. The baselevel pext value will always be higher than any of the variant annotation pext values, because the base value is just the sum of the expression of protein coding transcripts that overlap the coding base. This baselevel value is what we show in the gnomAD browser. Just because a position has a high baselevel value though, *does not* mean that say, a pLoF at that position has a high pext value.
 
 We get these baselevel values by using the sites table of all possible variant in the genome. We sum of the expression of all transcripts overlapping that base, where there's a coding consequence. 
 
 - TCF4 
 ```python
 from tx_annotation import * 
-mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_mt_path, "ht")
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_ht_path, "ht")
 gene_baselevel= get_baselevel_expression_for_genes(mt, gtex, gene_list = {'TCF4'})
-gene_baselevel.export("gs://gnomad-public/papers/2019-tx-annotation/results/TCF4.baselevel.ext.021319.tsv.bgz")
+gene_baselevel.export("gs://gnomad-public/papers/2019-tx-annotation/results/baselevel_pext/TCF4.baselevel.ext.021319.tsv.bgz")
 ```
 
 The resulting file is used in Fig2B and Supp Fig 4. 
 
 You can specify any number of genes you want in `gene_list`. If you don't specify any genes, it will annotate all positions in the exome. 
 
-- SCN2A using fetal isoform expression 
-```python
-hbdr_fetal_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.RSEM.sample_specific.tx_medians.021719.mt"
-mt, hbdr_fetal = read_tx_annotation_tables(context_ht_path, hbdr_fetal_path, "ht")
-gene_baselevel= get_baselevel_expression_for_genes(mt, hbdr_fetal, gene_list = {'SCN2A'})
-
-```
-This file was used in Supp Fig 6D.
-
 #### Comparison of pext in highly conserved and unconserved regions
-
 
 1 - Read in baselevel expresison and phyloCSF files
 ```python
