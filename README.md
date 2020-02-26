@@ -95,7 +95,7 @@ get_gtex_summary(isoform_tpms_path,tx_summary_ht_path)
 ```
 
 For the manuscript 
-```
+```python
 gtex_v7_isoform_tpms_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/reheadered.GTEx_Analysis_2016-01-15_v7_RSEMv1.2.22_transcript_tpm.txt.gz"
 gtex_v7_tx_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht"
 get_gtex_summary(gtex_v7_isoform_tpms_path,gtex_v7_tx_summary_mt_path )
@@ -105,28 +105,28 @@ If you'd like to get mean isoform expression accross tissues and not median, add
 
 Running the above commands on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
 
-#### 2) Prepare the gene expression file 
+#### 3) Prepare the gene expression file 
 
 You'll need to create separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. Here, we define gene expression as the sum of transcript expression from RSEM. So we use the median isoform file we created. 
 
-```
-gtex_v7_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
-get_gene_expression(gtex_v7_tx_summary_ht_path, gtex_v7_gene_maximums_kt_path)
+```python
+gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
+get_gene_expression(gtex_v7_tx_summary_ht_path, gtex_v7_gene_maximums_ht_path)
 ```
 
-#### 3) Add pext values
+#### 4) Add pext values
 All you have to do at this point is import your VEP'd variant matrix table, and run the tx_annotate() function!
 
 1 - Import VEP'd variant MT, and median isoform expression MT: 
 ```python
-mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_mt_path, "mt")
+mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_ht_path, "mt")
 ```
 2 - Run tx_annotation
 ```python
 ddid_asd = tx_annotate_mt(mt, gtex,
                           tx_annotation_type = "proportion",
+                          gene_maximums_ht_path =gtex_v7_gene_maximums_ht_path,
                           filter_to_csqs=all_coding_csqs)
-
 ```
 
 This command by default will remove certain GTEx tissues with <100 samples, reproductive tissues, or cell lines (specified in `tx_annotation_resources` and in the manuscript). 
