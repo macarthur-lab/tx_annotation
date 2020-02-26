@@ -13,9 +13,9 @@ You can have additional columns in your variant file, which will be maintained, 
  
 Instructions to set up Hail [can be found in the Hail docs](https://hail.is/docs/0.2/)
 
-If you're unable to set up Hail in your local environment, we have released the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.tsv.bgz
+If you're unable to set up Hail in your local environment, we have released the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.GTEx.v7.021520.tsv.bgz
 
-More information about this files format is below.
+More information about this file's format is below.
 
 Please be aware that while we don't expect any issues, the files may be iterated upon until publication of the manuscript! 
 
