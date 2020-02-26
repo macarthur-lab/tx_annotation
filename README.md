@@ -171,17 +171,23 @@ We note that for a minority of genes, when RSEM assigns higher relative expressi
 To get around this artifact from affecting our analyses, you can calculate the maximum pext score for all variants across all protein coding genes, and removed any gene where the maximum pext score is below a given threshold
 
 ```python
-mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v8_tx_summary_ht_path, 'ht')
+context_max_per_gene = /path/to/tsv/file/of/pext/per/gene/you/want/to/create.tsv
 
-mt_annotated = tx_annotate_mt(mt, gtex, "proportion",
-                              gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
-                              filter_to_csqs=all_coding_csqs)
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_ht_path, 'ht')
 
-mt_annotated.write(context_hg38_annotated, overwrite=True)
+context_annotated = tx_annotate_mt(mt, gtex, "proportion",
+                                  gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
+                                  filter_to_csqs=all_coding_csqs)
 
-identify_maximum_pext_per_gene(context_hg38_annotated, context_hg38_max_per_gene)
+mt_annotated.write(context_annotated, overwrite=True)
+
+identify_maximum_pext_per_gene(context_annotated, context_max_per_gene)
 
 ```
+
+For the manuscript, this is gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/all.genes.max.pext.GTEx.v7.021520.tsv.bgz
+
+and for all analyses in the paper, we've filtered out genes where max pext is < 0.2
 
 ## Analyses in manuscript 
 Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
