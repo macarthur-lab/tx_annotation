@@ -13,27 +13,31 @@ You can have additional columns in your variant file, which will be maintained, 
  
 Instructions to set up Hail [can be found in the Hail docs](https://hail.is/docs/0.2/)
 
-If you're unable to set up Hail in your local environment, we have released the pext values for every possible SNV in the genome: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/all.possible.snvs.tx_annotated.021819.tsv.bgz
+If you're unable to set up Hail in your local environment, we have released the pext values for every possible SNV in the genome in both a tsv and HT format in the folder: gs://gnomad-public/papers/2019-tx-annotation/pre_computed/
 
-More information about this files format is below.
+More information about this file's format is below.
 
 Please be aware that while we don't expect any issues, the files may be iterated upon until publication of the manuscript! 
 
 We will walk through an example of annotating *de novo* variants in autism and developmental delay / intellectual disability with the GTEx v7 dataset. 
 
 #### 0) Start a cluster and a Hail environment
-We recommend using [cloud tools from Neale lab](https://github.com/Nealelab/cloudtools) for Google Cloud.
+We recommend using [hailctl dataproc from the Hail team](https://hail.is/docs/0.2/hail_on_the_cloud.html) for Google Cloud. Note that this is a successor to cloudtools from Ben Neale's lab.
 
 You will need the gnomAD and tx-annotation init scripts, which are both publically available. To start a cluster:
 
 ```
-cluster start tutorial --worker-machine-type n1-highmem-8 --spark 2.2.0 --version 0.2 --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
+hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8 --vep GRCh37
 ```
 
-At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
+To connect to the clustter 
+```
+hailctl dataproc connect tutorial nb
+```
+And start a Hail Jupyter notebook
 
 #### 1) Prepare the variant file 
-The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt
+The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt
 
 This is what the first line of the file looks like : 
 > DataSet CHROM POSITION  REF ALT	GENE_NAME	VEP_functional_class_canonical	MPC	loftee	group
@@ -41,11 +45,15 @@ This is what the first line of the file looks like :
 
 Again, we will only use the chrom, pos, ref, alt columns, and will add additional columns. The VEP columns in the file are based on the canonical trasncript, so we will re-VEP. 
 
-In order to add pext values, you must annotate with VEP. This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
+Note that unless the variant file you're using is already available as HT that's been vep'd in Hail, we recommend running VEP since the pext code uses the nested VEP format for calculation. 
+
+This is how to import the file into Hail, define the variant field, vep, and write the MT. Note that this VEP configuration will also annotate with LOFTEE v.1.0
+
+0 - At the top of your script specify `from tx_annotation import *` which will start a Hail environment, and import necessary parts of the gnomAD repository.
 
 1 - Import file as a table 
 ```python
-rt = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/asd_ddid_de_novos.txt")
+rt = hl.import_table("gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt")
 ```
 2 - Define the variant in terms of chrom:pos:ref:alt and have Hail parse it, which will create locus and alleles fields
 ```python
@@ -61,8 +69,9 @@ mt = mt.repartition(10)
 4 - VEP and write out the MT
 ```python
 annotated_mt = hl.vep(mt, vep_config)
-annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.vepped.021819.mt")
+annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.vepped.021819.mt")
 ```
+For GRCh37 in the paper, I used `annotated_mt = hl.vep(mt, “gs://hail-common/vep/vep/vep85-loftee-gcloud.json”)` however, since then the gnomAD team has made updates to their core function, so `vep_or_lookup_vep(mt.rows())` may also work. Note that this latter function only takes HT, hence mt.rows(). 
 
 #### 2) Prepare the isoform expression file 
 
@@ -74,33 +83,50 @@ We've replaced the sample names with unique tissue names, so that samples with t
 > transcript_id   gene_id Adipose-Subcutaneous.1  Muscle-Skeletal.2       Artery-Tibial.3 
 > ENST00000373020.8       ENSG00000000003.14      26.32   3.95    13.23   
 
+Make sure the file is bgzip'd.
+
 We first need to get the median expression of all transcripts per tissue. This can be carried out using the `get_gtex_summary()` function (the function name is a misnomer, as it can work on non-GTEx files).
 
-```python
-gtex_isoform_expression_file = /path/to/text/file/with/isoform/quantifications
-gtex_median_isoform_expression_mt = /path/to/matrix_table/file/you/want/to/create
-get_gtex_summary(gtex_isoform_expression_file,gtex_median_isoform_expression_mt )
 
+```python
+isoform_tpms_path = /path/to/text/file/with/isoform/quantifications.tsv.bgz
+tx_summary_ht_path = /path/to/matrix_table/file/you/want/to/create
+get_gtex_summary(isoform_tpms_path,tx_summary_ht_path)
 ```
+
+For the manuscript 
+```python
+gtex_v7_isoform_tpms_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/reheadered.GTEx_Analysis_2016-01-15_v7_RSEMv1.2.22_transcript_tpm.txt.gz"
+gtex_v7_tx_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht"
+get_gtex_summary(gtex_v7_isoform_tpms_path,gtex_v7_tx_summary_mt_path )
+```
+
 If you'd like to get mean isoform expression accross tissues and not median, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
 
-Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
+Running the above commands on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
 
-At this point, you'll also need a separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. For the manuscript, we directly imported gene expression values provided by GTEx, which were created using RNASeQC, from the GTEx portal website. They are available here: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt
+#### 3) Prepare the gene expression file 
 
-#### 3) Add pext values
+You'll need to create separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. Here, we define gene expression as the sum of transcript expression from RSEM. So we use the median isoform file we created. 
+
+```python
+gtex_v7_gene_maximums_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
+get_gene_expression(gtex_v7_tx_summary_ht_path, gtex_v7_gene_maximums_ht_path)
+```
+
+#### 4) Add pext values
 All you have to do at this point is import your VEP'd variant matrix table, and run the tx_annotate() function!
 
 1 - Import VEP'd variant MT, and median isoform expression MT: 
 ```python
-mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_mt_path, "mt")
+mt, gtex = read_tx_annotation_tables(ddid_asd_de_novos, gtex_v7_tx_summary_ht_path, "mt")
 ```
 2 - Run tx_annotation
 ```python
 ddid_asd = tx_annotate_mt(mt, gtex,
                           tx_annotation_type = "proportion",
+                          gene_maximums_ht_path =gtex_v7_gene_maximums_ht_path,
                           filter_to_csqs=all_coding_csqs)
-
 ```
 
 This command by default will remove certain GTEx tissues with <100 samples, reproductive tissues, or cell lines (specified in `tx_annotation_resources` and in the manuscript). 
@@ -114,7 +140,7 @@ The function returns your variant MT with a new field called `tx_annotation` (dd
 
 At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just variants found on the canonical transcript - the last of which  sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the context for which we see this method being most powerful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
 
-#### 4) Optional post-processing to pull out pext values for the worst consequence annotation
+#### 5) Optional post-processing to pull out pext values for the worst consequence annotation
 
 At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release if it's predicted to affect splicing). We therefore replace OS annotations with the original annotation (ie. we replace the HC for a synonymous variant with ""). Finally, we extract the worst consequence, and create one column per tissue. 
 
@@ -135,8 +161,27 @@ ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 At this point you can write out the file with `ddid_asd.rows().export("out_file")`
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript. We've exported the result of this code snippet here: 
-gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.tx_annotated.proprotion.021819.tsv.bgz
+gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021520.tsv.bgz
 
+
+#### 6) (Optional) get max pext per gene to filter genes where pext will be misquantified
+
+We note that for a minority of genes, when RSEM assigns higher relative expression to non-coding transcripts, the sum of the value of coding transcripts can be much smaller than the gene expression value for the transcript, resulting in low pext scores for all coding variants in the gene, and thus resulting in possible filtering of all variants for a given gene. In many cases this appears to be the result of spurious non-coding transcripts with a high degree of exon overlap with true coding transcripts. 
+
+To get around this artifact from affecting our analyses, you can calculate the maximum pext score for all variants across all protein coding genes, and removed any gene where the maximum pext score is below a given threshold
+
+```python
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v8_tx_summary_ht_path, 'ht')
+
+mt_annotated = tx_annotate_mt(mt, gtex, "proportion",
+                              gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
+                              filter_to_csqs=all_coding_csqs)
+
+mt_annotated.write(context_hg38_annotated, overwrite=True)
+
+identify_maximum_pext_per_gene(context_hg38_annotated, context_hg38_max_per_gene)
+
+```
 
 ## Analyses in manuscript 
 Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
