@@ -27,7 +27,7 @@ We recommend using [hailctl dataproc from the Hail team](https://hail.is/docs/0.
 You will need the gnomAD and tx-annotation init scripts, which are both publically available. To start a cluster:
 
 ```
-hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8
+hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8 --vep {choose from GRCh37,GRCh38}
 ```
 
 To connect to the clustter 
