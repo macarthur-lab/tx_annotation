@@ -216,6 +216,7 @@ The resulting file is used in Fig2B and Supp Fig 4.
 You can specify any number of genes you want in `gene_list`. If you don't specify any genes, it will annotate all positions in the exome. 
 
 #### Comparison of pext in highly conserved and unconserved regions
+Also found in /analyses/conservation_analysis.py
 
 1 - Read in baselevel expresison and phyloCSF files
 ```python
@@ -224,6 +225,14 @@ all_baselevel_ht = hl.read_table(all_baselevel_ht_path)
 phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 ```
 Note that all_baselevel_ht_path is the file used to create the tx_annotation tracks in the [gnomAD browser](https://gnomad.broadinstitute.org/)
+
+Remove tissues that were filtered from the manuscript from this file, to maintain consistency & recalculate the mean pext 
+```python
+all_baselevel_ht = all_baselevel_ht.drop(*v7_tissues_to_drop)
+tissues = set(all_baselevel_ht.row) - {'ensg', 'symbol', 'locus', 'mean_proportion', 'mean_prop_correct'}
+all_baselevel_ht = all_baselevel_ht.annotate(mean_prop_conservation=hl.mean(
+    hl.filter(lambda e: ~hl.is_nan(e),[all_baselevel_ht[tissue_id] for tissue_id in tissues]), filter_missing=True))
+```
 
 2 - Define regions of high and low conservation, and filter remaning regions
 ```python
@@ -237,11 +246,18 @@ phylocsf = phylocsf.filter(phylocsf.conservation_type != "filter")
 3 -  Make intervals in the phyloCSF file
 phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 ```python
-phylocsf = phylocsf.annotate(
-    interval = hl.interval(hl.locus(phylocsf.chrom, phylocsf.start_coordinate), hl.locus(phylocsf.chrom, phylocsf.end_coordinate)),
-    interval_name = phylocsf.chrom + ":" + hl.str(phylocsf.start_coordinate) + "-" + hl.str(phylocsf.end_coordinate) )
+phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
+
+phylocsf = phylocsf.annotate(interval = 
+                                hl.interval(hl.locus(phylocsf.chrom, phylocsf.start_coordinate), 
+                                hl.locus(phylocsf.chrom, phylocsf.end_coordinate)),
+                             interval_name = 
+                                 phylocsf.chrom + ":" + 
+                                 hl.str(phylocsf.start_coordinate) + "-" + 
+                                 hl.str(phylocsf.end_coordinate) )
 phylocsf = phylocsf.key_by(phylocsf.interval)
 ```
+
 4 - Filter the baselevel expression file to the intervals of high or low conservation in the phyloCSF file
 ```python
 all_baselevel_ht = all_baselevel_ht.annotate(**phylocsf[all_baselevel_ht.locus])
@@ -260,7 +276,7 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
 ```
 6 - Export the file for plotting
 ```python
-mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
+mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021520.tsv.bgz")
 ```
 
 #### Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes (Figure 4A)
