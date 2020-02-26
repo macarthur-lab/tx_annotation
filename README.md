@@ -71,6 +71,7 @@ mt = mt.repartition(10)
 annotated_mt = hl.vep(mt, vep_config)
 annotated_mt.write("gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.vepped.021819.mt")
 ```
+For GRCh37 in the paper, I used `annotated_mt = hl.vep(mt, “gs://hail-common/vep/vep/vep85-loftee-gcloud.json”)` however, since then the gnomAD team has made updates to their core function, so `vep_or_lookup_vep(mt.rows())` may also work. Note that this latter function only takes HT, hence mt.rows(). 
 
 #### 2) Prepare the isoform expression file 
 
