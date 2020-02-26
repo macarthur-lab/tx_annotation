@@ -161,8 +161,7 @@ ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 At this point you can write out the file with `ddid_asd.rows().export("out_file")`
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript. We've exported the result of this code snippet here: 
-gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variant/asd_ddid_de_novos.tx_annotated.proprotion.021819.tsv.bgz
-
+gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021520.tsv.bgz
 
 ## Analyses in manuscript 
 Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
