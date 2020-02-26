@@ -20,7 +20,7 @@ get_gene_expression(gtex_v8_tx_summary_ht_path, gtex_v8_gene_maximums_ht_path)
 # Annotate context (ie. all possible bases)
 mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v8_tx_summary_ht_path, 'ht')
 
-mt_annotated = tx_annotate_mt(mt, gtex, "proportion",
+context_hg38_annotated = tx_annotate_mt(mt, gtex, "proportion",
                               tissues_to_filter=None,
                               gene_maximums_ht_path=gtex_v8_gene_maximums_ht_path,
                               filter_to_csqs=all_coding_csqs)
