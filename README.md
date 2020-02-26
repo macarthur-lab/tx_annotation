@@ -83,19 +83,36 @@ We've replaced the sample names with unique tissue names, so that samples with t
 > transcript_id   gene_id Adipose-Subcutaneous.1  Muscle-Skeletal.2       Artery-Tibial.3 
 > ENST00000373020.8       ENSG00000000003.14      26.32   3.95    13.23   
 
+Make sure the file is bgzip'd.
+
 We first need to get the median expression of all transcripts per tissue. This can be carried out using the `get_gtex_summary()` function (the function name is a misnomer, as it can work on non-GTEx files).
 
-```python
-gtex_isoform_expression_file = /path/to/text/file/with/isoform/quantifications
-gtex_median_isoform_expression_mt = /path/to/matrix_table/file/you/want/to/create
-get_gtex_summary(gtex_isoform_expression_file,gtex_median_isoform_expression_mt )
 
+```python
+isoform_tpms_path = /path/to/text/file/with/isoform/quantifications.tsv.bgz
+tx_summary_ht_path = /path/to/matrix_table/file/you/want/to/create
+get_gtex_summary(isoform_tpms_path,tx_summary_ht_path)
 ```
+
+For the manuscript 
+```
+gtex_v7_isoform_tpms_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/reheadered.GTEx_Analysis_2016-01-15_v7_RSEMv1.2.22_transcript_tpm.txt.gz"
+gtex_v7_tx_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht"
+get_gtex_summary(gtex_v7_isoform_tpms_path,gtex_v7_tx_summary_mt_path )
+```
+
 If you'd like to get mean isoform expression accross tissues and not median, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
 
-Unfortunately, we can't share the per-sample GTEx RSEM file as it requires dbGAP approval. However, running this on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.V7.tx_medians.110818.mt which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
+Running the above commands on the GTEx v7 dataset creates: gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht which is the file used for the analyses in the manuscript and the file you can use for your annotation GTEx v7 annotation. 
 
-At this point, you'll also need a separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. For the manuscript, we directly imported gene expression values provided by GTEx, which were created using RNASeQC, from the GTEx portal website. They are available here: gs://gnomad-public/papers/2019-tx-annotation/data/GTEx.v7.gene_expression_per_gene_per_tissue.120518.kt
+#### 2) Prepare the gene expression file 
+
+You'll need to create separate file with gene expression values per tissue, with the tissue names matching the median isoform expression file. Here, we define gene expression as the sum of transcript expression from RSEM. So we use the median isoform file we created. 
+
+```
+gtex_v7_gene_maximums_kt_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.v7.gene_expression_per_gene_per_tissue.021420.ht"
+get_gene_expression(gtex_v7_tx_summary_ht_path, gtex_v7_gene_maximums_kt_path)
+```
 
 #### 3) Add pext values
 All you have to do at this point is import your VEP'd variant matrix table, and run the tx_annotate() function!
