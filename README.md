@@ -140,7 +140,7 @@ The function returns your variant MT with a new field called `tx_annotation` (dd
 
 At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just variants found on the canonical transcript - the last of which  sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the context for which we see this method being most powerful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
 
-#### 4) Optional post-processing to pull out pext values for the worst consequence annotation
+#### 5) Optional post-processing to pull out pext values for the worst consequence annotation
 
 At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release if it's predicted to affect splicing). We therefore replace OS annotations with the original annotation (ie. we replace the HC for a synonymous variant with ""). Finally, we extract the worst consequence, and create one column per tissue. 
 
@@ -162,6 +162,26 @@ At this point you can write out the file with `ddid_asd.rows().export("out_file"
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript. We've exported the result of this code snippet here: 
 gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021520.tsv.bgz
+
+
+#### 6) (Optional) get max pext per gene to filter genes where pext will be misquantified
+
+We note that for a minority of genes, when RSEM assigns higher relative expression to non-coding transcripts, the sum of the value of coding transcripts can be much smaller than the gene expression value for the transcript, resulting in low pext scores for all coding variants in the gene, and thus resulting in possible filtering of all variants for a given gene. In many cases this appears to be the result of spurious non-coding transcripts with a high degree of exon overlap with true coding transcripts. 
+
+To get around this artifact from affecting our analyses, you can calculate the maximum pext score for all variants across all protein coding genes, and removed any gene where the maximum pext score is below a given threshold
+
+```python
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v8_tx_summary_ht_path, 'ht')
+
+mt_annotated = tx_annotate_mt(mt, gtex, "proportion",
+                              gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
+                              filter_to_csqs=all_coding_csqs)
+
+mt_annotated.write(context_hg38_annotated, overwrite=True)
+
+identify_maximum_pext_per_gene(context_hg38_annotated, context_hg38_max_per_gene)
+
+```
 
 ## Analyses in manuscript 
 Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
