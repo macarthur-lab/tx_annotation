@@ -1,4 +1,5 @@
-from gnomad_hail import *
+from gnomad.utils.vep import *
+
 
 # MTs/HTs of interest
 gnomad_release_mt_path = "gs://gnomad-public/release/2.1.1/ht/exomes/gnomad.exomes.r2.1.1.sites.ht"
@@ -71,7 +72,7 @@ def make_clinvar_hail2(clinvar_vcf_path, clinvar_variants_table, clinvar_mt_out_
 
 
 def revep_with_loftee_beta(vepped_mt_path, out_mt_path):
-    clinvar = hl.read_matrix_table(clinvar_vepped_mt_path)
+    clinvar = hl.read_matrix_table(vepped_mt_path)
     clinvar = clinvar.drop(clinvar.vep)
     clinvar_vep = hl.vep(clinvar_mt, vep_config)
     clinvar_vep.write(out_mt_path)
@@ -114,6 +115,7 @@ def make_gnomad_release_hail2(vcf_path, mt_out):
     release_mt = release_mt.filter_rows(release_mt.as_pass)
     release_mt = hl.vep(release_mt, vep_config)
     release_mt.write(mt_out)
+    # Confirmed 13,443,237 variants
     # Confirmed 13,443,237 variants
 
 
