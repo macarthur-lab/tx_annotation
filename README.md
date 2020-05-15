@@ -248,7 +248,6 @@ phylocsf = phylocsf.filter(phylocsf.conservation_type != "filter")
 ```
 
 3 -  Make intervals in the phyloCSF file
-phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 ```python
 phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 
