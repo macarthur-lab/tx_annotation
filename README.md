@@ -140,7 +140,7 @@ The function returns your variant MT with a new field called `tx_annotation` (dd
 
 At this point, you can choose what annotation you want to use for a given variant (for example, you may be interested in any pLoF variant, or variants found on certain set of transcripts, or just variants found on the canonical transcript - the last of which  sort of defeats the point of using this method). In the manuscript we used the worst consequence accross transcripts, which is the context for which we see this method being most powerful. If you'd also like to use the worst consequence, and pull out pext values for the worst consequence, we have helper functions available: 
 
-#### 5) Optional post-processing to pull out pext values for the worst consequence annotation
+#### 5) Optional post-processing: pull out pext values for the worst consequence annotation
 
 At this point you will remove all variants that did not receive a pext value (e.g. if you specific `filter_to_csqs = all_coding_csqs` this will remove noncoding variants). At this point, we don't support the OS annotation in LOFTEE, which add pLoF annotations to missense and synonymous variants (for example, a synonymous variant can be called LOFTEE HC in the latest LOFTEE release if it's predicted to affect splicing). We therefore replace OS annotations with the original annotation (ie. we replace the HC for a synonymous variant with ""). Finally, we extract the worst consequence, and create one column per tissue. 
 
@@ -164,24 +164,30 @@ This will create the transcript annotated *de novo* variant file used in Figure 
 gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021520.tsv.bgz
 
 
-#### 6) (Optional) get max pext per gene to filter genes where pext will be misquantified
+#### 6) Optional (but highly recommended): get max pext per gene to filter genes where pext will be misquantified
 
 We note that for a minority of genes, when RSEM assigns higher relative expression to non-coding transcripts, the sum of the value of coding transcripts can be much smaller than the gene expression value for the transcript, resulting in low pext scores for all coding variants in the gene, and thus resulting in possible filtering of all variants for a given gene. In many cases this appears to be the result of spurious non-coding transcripts with a high degree of exon overlap with true coding transcripts. 
 
 To get around this artifact from affecting our analyses, you can calculate the maximum pext score for all variants across all protein coding genes, and removed any gene where the maximum pext score is below a given threshold
 
 ```python
-mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v8_tx_summary_ht_path, 'ht')
+context_max_per_gene = /path/to/tsv/file/of/pext/per/gene/you/want/to/create.tsv
 
-mt_annotated = tx_annotate_mt(mt, gtex, "proportion",
-                              gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
-                              filter_to_csqs=all_coding_csqs)
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_ht_path, 'ht')
 
-mt_annotated.write(context_hg38_annotated, overwrite=True)
+context_annotated = tx_annotate_mt(mt, gtex, "proportion",
+                                  gene_maximums_ht_path=gtex_v7_gene_maximums_ht_path,
+                                  filter_to_csqs=all_coding_csqs)
 
-identify_maximum_pext_per_gene(context_hg38_annotated, context_hg38_max_per_gene)
+mt_annotated.write(context_annotated, overwrite=True)
+
+identify_maximum_pext_per_gene(context_annotated, context_max_per_gene)
 
 ```
+
+For the manuscript, this is gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/all.genes.max.pext.GTEx.v7.021520.tsv.bgz
+
+and for all analyses in the paper, we've filtered out genes where max pext is < 0.2
 
 ## Analyses in manuscript 
 Here we'll detail the commands for obtaining pext values for some of the analyses in manuscript. This will go over the analysis of:
@@ -193,33 +199,24 @@ Note that scripts for these and other analyses are availabel in `/analyses/` fol
 
 
 #### Getting baselevel expression values 
-The idea here is that you annotate the expression of a given *position* as opposed to a variant consequence pair. The baselevel pext value will always be higher than any of the variant annotation pext values, because the base value is just the sum of the expression of protein coding transcripts that overlap the coding base. This baselevel value is what we show in the gnomAD browser. Just because a position has a high baselevel value though, *does not* mean that say, a pLoF at that position has a high pLoF value.
+The idea here is that you annotate the expression of a given *position* as opposed to a variant consequence pair. The baselevel pext value will always be higher than any of the variant annotation pext values, because the base value is just the sum of the expression of protein coding transcripts that overlap the coding base. This baselevel value is what we show in the gnomAD browser. Just because a position has a high baselevel value though, *does not* mean that say, a pLoF at that position has a high pext value.
 
 We get these baselevel values by using the sites table of all possible variant in the genome. We sum of the expression of all transcripts overlapping that base, where there's a coding consequence. 
 
 - TCF4 
 ```python
 from tx_annotation import * 
-mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_mt_path, "ht")
+mt, gtex = read_tx_annotation_tables(context_ht_path, gtex_v7_tx_summary_ht_path, "ht")
 gene_baselevel= get_baselevel_expression_for_genes(mt, gtex, gene_list = {'TCF4'})
-gene_baselevel.export("gs://gnomad-public/papers/2019-tx-annotation/results/TCF4.baselevel.ext.021319.tsv.bgz")
+gene_baselevel.export("gs://gnomad-public/papers/2019-tx-annotation/results/baselevel_pext/TCF4.baselevel.ext.021319.tsv.bgz")
 ```
 
 The resulting file is used in Fig2B and Supp Fig 4. 
 
 You can specify any number of genes you want in `gene_list`. If you don't specify any genes, it will annotate all positions in the exome. 
 
-- SCN2A using fetal isoform expression 
-```python
-hbdr_fetal_path = "gs://gnomad-public/papers/2019-tx-annotation/data/HBDR.RSEM.sample_specific.tx_medians.021719.mt"
-mt, hbdr_fetal = read_tx_annotation_tables(context_ht_path, hbdr_fetal_path, "ht")
-gene_baselevel= get_baselevel_expression_for_genes(mt, hbdr_fetal, gene_list = {'SCN2A'})
-
-```
-This file was used in Supp Fig 6D.
-
 #### Comparison of pext in highly conserved and unconserved regions
-
+Also found in /analyses/conservation_analysis.py
 
 1 - Read in baselevel expresison and phyloCSF files
 ```python
@@ -228,6 +225,14 @@ all_baselevel_ht = hl.read_table(all_baselevel_ht_path)
 phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 ```
 Note that all_baselevel_ht_path is the file used to create the tx_annotation tracks in the [gnomAD browser](https://gnomad.broadinstitute.org/)
+
+Remove tissues that were filtered from the manuscript from this file, to maintain consistency & recalculate the mean pext 
+```python
+all_baselevel_ht = all_baselevel_ht.drop(*v7_tissues_to_drop)
+tissues = set(all_baselevel_ht.row) - {'ensg', 'symbol', 'locus', 'mean_proportion', 'mean_prop_correct'}
+all_baselevel_ht = all_baselevel_ht.annotate(mean_prop_conservation=hl.mean(
+    hl.filter(lambda e: ~hl.is_nan(e),[all_baselevel_ht[tissue_id] for tissue_id in tissues]), filter_missing=True))
+```
 
 2 - Define regions of high and low conservation, and filter remaning regions
 ```python
@@ -241,11 +246,19 @@ phylocsf = phylocsf.filter(phylocsf.conservation_type != "filter")
 3 -  Make intervals in the phyloCSF file
 phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
 ```python
-phylocsf = phylocsf.annotate(
-    interval = hl.interval(hl.locus(phylocsf.chrom, phylocsf.start_coordinate), hl.locus(phylocsf.chrom, phylocsf.end_coordinate)),
-    interval_name = phylocsf.chrom + ":" + hl.str(phylocsf.start_coordinate) + "-" + hl.str(phylocsf.end_coordinate) )
+phylocsf = phylocsf.annotate(chrom = phylocsf.chromosome_name.replace("chr",""))
+
+phylocsf = phylocsf.annotate(interval = 
+                                hl.interval(hl.locus(phylocsf.chrom, phylocsf.start_coordinate), 
+                                hl.locus(phylocsf.chrom, phylocsf.end_coordinate)),
+                             interval_name = 
+                                 phylocsf.chrom + ":" + 
+                                 hl.str(phylocsf.start_coordinate) + "-" + 
+                                 hl.str(phylocsf.end_coordinate) )
+                                 
 phylocsf = phylocsf.key_by(phylocsf.interval)
 ```
+
 4 - Filter the baselevel expression file to the intervals of high or low conservation in the phyloCSF file
 ```python
 all_baselevel_ht = all_baselevel_ht.annotate(**phylocsf[all_baselevel_ht.locus])
@@ -264,7 +277,7 @@ mean_proportion_in_interval = (all_baselevel_ht.group_by(symbol = all_baselevel_
 ```
 6 - Export the file for plotting
 ```python
-mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021219.tsv.bgz")
+mean_proportion_in_interval.export("gs://gnomad-public/papers/2019-tx-annotation/results/conservation.phylocsf.vs.pext.021520.tsv.bgz")
 ```
 
 #### Comparison of % variant filtered with pext < 0.1 in haploinsufficient disease genes (Figure 4A)
@@ -285,14 +298,14 @@ There are two options for importing gene lists, either importing ENSG IDs, or im
 
 2 - Annotate gnomAD exomes
 ```python
-mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt, gtex = read_tx_annotation_tables(gnomad_release_mt_path, gtex_v7_tx_summary_ht_path, "ht")
 mt = mt.filter_rows(hl.len(mt.filters) == 0)
 mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
                               filter_to_csqs=lof_csqs,
                               filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
 mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotation))
 mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
-mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 
 - `gene_column_in_mt` is one of either `gene_id` (ENSG) or `gene_symbol` and tells the function which VEP field to look to filter to genes.
 
@@ -301,19 +314,19 @@ mt_gnomad_hi.rows().export("%sHI_genes.gnomad.exomes.r2.1.tx_annotated.021519.ts
 ```
 3 - Annotate gnomAD genomes 
 ```python
-mt_genomes, gtex = read_tx_annotation_tables(gnomad_genomes_release_mt_path, gtex_v7_tx_summary_mt_path, "ht")
+mt_genomes, gtex = read_tx_annotation_tables(gnomad_genomes_release_mt_path, gtex_v7_tx_summary_ht_path, "ht")
 mt_genomes = mt_genomes.filter_rows(hl.len(mt_genomes.filters) == 0)
-mt_gnomad_genomes_hi = tx_annotate_mt(mt_genomes, gtex,"proportion",
+mt_gnomad_hi = tx_annotate_mt(mt, gtex,"proportion",
                               filter_to_csqs=lof_csqs,
                               filter_to_genes=hi_genes, gene_column_in_mt="gene_id")
-mt_gnomad_genomes_hi = mt_gnomad_genomes_hi.filter_rows(~hl.is_missing(mt_gnomad_genomes_hi.tx_annotation))
-mt_gnomad_genomes_hi = pull_out_worst_from_tx_annotate(mt_gnomad_genomes_hi)
-mt_gnomad_genomes_hi.rows().export("%sHI_genes.gnomad.genomes.r2.1.tx_annotated.021619.tsv.bgz" %out_dir)
+mt_gnomad_hi = mt_gnomad_hi.filter_rows(~hl.is_missing(mt_gnomad_hi.tx_annotation))
+mt_gnomad_hi = pull_out_worst_from_tx_annotate(mt_gnomad_hi)
+mt_gnomad_hi.rows().export("%sHI_genes.gnomad.genomes.r2.1.tx_annotated.021420.tsv.bgz" %out_dir)
 ```
 
 4 - Annotate ClinVar 
 ```python
-clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_mt_path, "ht")
+clinvar_mt, gtex = read_tx_annotation_tables(clinvar_ht_path, gtex_v7_tx_summary_ht_path, "ht")
 mt_clinvar_hi = tx_annotate_mt(clinvar_mt, gtex,"proportion",
                                filter_to_csqs=lof_csqs, filter_to_genes=hi_genes,
                                gene_column_in_mt="gene_id")
@@ -321,6 +334,6 @@ mt_clinvar_hi = mt_clinvar_hi.filter_rows(~hl.is_missing(mt_clinvar_hi.tx_annota
 mt_clinvar_hi = pull_out_worst_from_tx_annotate(mt_clinvar_hi)
 mt_clinvar_hi = mt_clinvar_hi.annotate_rows(**mt_clinvar_hi.info)
 mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info") 
-mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021519.tsv.bgz" %out_dir)
+mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021420.tsv.bgz" %out_dir)
 ```
 The fields are dropped to save space. 
