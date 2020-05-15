@@ -5,12 +5,8 @@ Welcome to the repository for the "Transcript expression-aware annotation improv
 
 - [Transcript expression-aware annotation](#transcript-expression-aware-annotation)
   * [Applying transcript expression aware annotation to your own dataset](#applying-transcript-expression-aware-annotation-to-your-own-dataset)
- 
   * [Analyses in manuscript](#analyses-in-manuscript)
  
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 ## Applying transcript expression aware annotation to your own dataset
 
