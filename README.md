@@ -94,11 +94,11 @@ tx_summary_ht_path = /path/to/matrix_table/file/you/want/to/create
 get_gtex_summary(isoform_tpms_path,tx_summary_ht_path)
 ```
 
-For the manuscript 
+For the manuscript we ran:
 ```python
 gtex_v7_isoform_tpms_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/reheadered.GTEx_Analysis_2016-01-15_v7_RSEMv1.2.22_transcript_tpm.txt.gz"
 gtex_v7_tx_summary_ht_path = "gs://gnomad-public/papers/2019-tx-annotation/data/GRCH37_hg19/GTEx.V7.tx_medians.021420.ht"
-get_gtex_summary(gtex_v7_isoform_tpms_path,gtex_v7_tx_summary_mt_path )
+get_gtex_summary(gtex_v7_isoform_tpms_path,gtex_v7_tx_summary_ht_path )
 ```
 
 If you'd like to get mean isoform expression accross tissues and not median, add get_medians = False to the command. If you want to also export the median isoform expression per tissue file as a tsv, add make_per_tissue_file = True 
@@ -158,7 +158,7 @@ ddid_asd = ddid_asd.annotate_rows(tx_annotation=ddid_asd.tx_annotation.map(fix_l
 ddid_asd = pull_out_worst_from_tx_annotate(ddid_asd)
 ```
 
-At this point you can write out the file with `ddid_asd.rows().export("out_file")`
+At this point you can write out the file with `ddid_asd.rows().export("gs://out_file.bgz")`
 
 This will create the transcript annotated *de novo* variant file used in Figure 4 of the manuscript. We've exported the result of this code snippet here: 
 gs://gnomad-public/papers/2019-tx-annotation/results/de_novo_variants/asd_ddid_de_novos.tx_annotated.021520.tsv.bgz
