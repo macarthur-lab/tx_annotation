@@ -341,3 +341,10 @@ mt_clinvar_hi = mt_clinvar_hi.drop("vep", "tx_annotation","info")
 mt_clinvar_hi.rows().export("%sHI_genes.clinvar.alleles.single.b37.tx_annotated.021420.tsv.bgz" %out_dir)
 ```
 The fields are dropped to save space. 
+
+
+
+
+
+
+
