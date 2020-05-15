@@ -2,8 +2,7 @@
 
 Welcome to the repository for the "Transcript expression-aware annotation improves rare variant discovery and interpretation" manuscript. Here we'll outline how to get transcript expression values for your variant file and isoform expression expression matrix of interest, and outline the commands and code to recreate analyses in the pre-print. 
 
-
-- [Transcript expression-aware annotation](#transcript-expression-aware-annotation)
+Table of contents
   * [Applying transcript expression aware annotation to your own dataset](#applying-transcript-expression-aware-annotation-to-your-own-dataset)
   * [Analyses in manuscript](#analyses-in-manuscript)
  
