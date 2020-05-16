@@ -32,7 +32,6 @@ You will need the gnomAD and tx-annotation init scripts, which are both publical
 
 ```
 hailctl dataproc start berylc2 --init gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8 --packages gnomad==0.3 --vep GRCh37 --requester-pays-allow-all --region us-central1
-
 ```
 
 Note that after version 02.34 Hail has moved VEP to a requestor pays bucket, so if using vep, must add a requestor pays. Also note that since we develoepd this package, the gnomAD repo has migrated over to the Broad Github. This has resulted in some changes that we've adapted our code to, but clusters now start with --packages gnomad==0.3. 
