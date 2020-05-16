@@ -38,7 +38,7 @@ Note that after version 02.34 Hail has moved VEP to a requestor pays bucket, so 
 
 My last update of the code used Hail `0.2.40-216e3cc7271c`. Note Hail changes quite frequently. My last run-through of the tutorial was with version `0.2.40-216e3cc7271c`. 
 
-Also note that in tx_annotation, vep_config is hard coded as `vep_config = vep_config_path("GRCh37")`. If you're on Grch38, please specify `vep_config = vep_config_path("GRCh38")` for proper VEP annotatio. 
+Also note that in tx_annotation, vep_config is hard coded as `vep_config = vep_config_path("GRCh37")`. If you're on Grch38, please specify `vep_config = vep_config_path("GRCh38")` for proper VEP annotation. 
 
 
 To connect to the clustter 
@@ -47,7 +47,7 @@ hailctl dataproc connect tutorial nb --zone us-central1-f
 ```
 And start a Hail Jupyter notebook
 
-If you have your regionn coded in, you won't need the --region and --zone flags on the start and cluster commands. In my last iterationn, I needed to do this, so leaving it in.
+If you have your region coded in, you won't need the --region and --zone flags on the start and cluster commands. In my last iteration, I needed to do this, so leaving it in.
 
 #### 1) Prepare the variant file 
 The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt
