@@ -43,9 +43,11 @@ Also note that in tx_annotation, vep_config is hard coded as `vep_config = vep_c
 
 To connect to the clustter 
 ```
-hailctl dataproc connect tutorial nb
+hailctl dataproc connect tutorial nb --zone us-central1-f
 ```
 And start a Hail Jupyter notebook
+
+If you have your regionn coded in, you won't need the --region and --zone flags on the start and cluster commands. In my last iterationn, I needed to do this, so leaving it in.
 
 #### 1) Prepare the variant file 
 The variant file we'll be using for the tutorial is available at : gs://gnomad-public/papers/2019-tx-annotation/data/de_novo_variants/asd_ddid_de_novos.txt
