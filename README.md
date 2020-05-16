@@ -31,8 +31,16 @@ We recommend using [hailctl dataproc from the Hail team](https://hail.is/docs/0.
 You will need the gnomAD and tx-annotation init scripts, which are both publically available. To start a cluster:
 
 ```
-hailctl dataproc start tutorial --init gs://gnomad-public/tools/inits/master-init.sh,gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8 --vep GRCh37
+hailctl dataproc start berylc2 --init gs://gnomad-public/papers/2019-tx-annotation/tx-annotation-init.sh --num-preemptible-workers 8 --packages gnomad==0.3 --vep GRCh37 --requester-pays-allow-all --region us-central1
+
 ```
+
+Note that after version 02.34 Hail has moved VEP to a requestor pays bucket, so if using vep, must add a requestor pays. Also note that since we develoepd this package, the gnomAD repo has migrated over to the Broad Github. This has resulted in some changes that we've adapted our code to, but clusters now start with --packages gnomad==0.3. 
+
+My last update of the code used Hail `0.2.40-216e3cc7271c`. Note Hail changes quite frequently. My last run-through of the tutorial was with version `0.2.40-216e3cc7271c`. 
+
+Also note that in tx_annotation, vep_config is hard coded as `vep_config = vep_config_path("GRCh37")`. If you're on Grch38, please specify `vep_config = vep_config_path("GRCh38")` for proper VEP annotatio. 
+
 
 To connect to the clustter 
 ```
