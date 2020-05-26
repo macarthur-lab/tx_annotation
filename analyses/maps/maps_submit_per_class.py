@@ -1,4 +1,6 @@
 # For code to run, need to git clone onto gnomad_lof on cluster
+# Note currently doesn't run beause constraint_utils hasn't updated to work with migration of gnomAD repo to Broad github. Issue here : https://github.com/macarthur-lab/gnomad_lof/issues/5#issue-624581763 will update as soon as it gets updated.
+
 import sys
 sys.path.append('/home/hail/gnomad_lof')
 
